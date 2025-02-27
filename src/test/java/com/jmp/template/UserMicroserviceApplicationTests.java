@@ -9,7 +9,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @SpringBootTest
-class TemplateApplicationTests {
+class UserMicroserviceApplicationTests {
     @Autowired
     private ApplicationContext context;
 
@@ -20,13 +20,13 @@ class TemplateApplicationTests {
 
     @Test
     void mainBeanIsPresent() {
-        assertThat(context.getBean(TemplateApplication.class)).isNotNull();
+        assertThat(context.getBean(UserMicroserviceApplication.class)).isNotNull();
     }
 }
 
-class TemplateMainMethodTest {
+class UserMicroserviceMainMethodTest {
     @Test
     void testMain() {
-        assertDoesNotThrow(() -> TemplateApplication.main(new String[]{}));
+        assertDoesNotThrow(() -> UserMicroserviceApplication.main(new String[]{}));
     }
 }
