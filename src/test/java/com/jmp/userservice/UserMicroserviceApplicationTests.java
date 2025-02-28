@@ -1,4 +1,4 @@
-package com.jmp.template;
+package com.jmp.userservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
