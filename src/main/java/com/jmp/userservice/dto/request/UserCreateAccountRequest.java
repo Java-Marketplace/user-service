@@ -1,9 +1,11 @@
 package com.jmp.userservice.dto.request;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class UserCreateAccountRequest {
 
     @NotBlank(message = "Should not be empty")
