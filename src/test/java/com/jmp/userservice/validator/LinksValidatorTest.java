@@ -1,4 +1,4 @@
-package com.jmp.userservice.unit.validator;
+package com.jmp.userservice.validator;
 
 import com.jmp.userservice.validation.validator.LinksValidator;
 import jakarta.validation.ConstraintValidatorContext;

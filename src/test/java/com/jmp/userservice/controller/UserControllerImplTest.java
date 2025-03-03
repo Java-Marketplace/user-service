@@ -1,8 +1,7 @@
-package com.jmp.userservice.unit.controller;
+package com.jmp.userservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jmp.userservice.constant.UserStatus;
-import com.jmp.userservice.controller.UserControllerImpl;
 import com.jmp.userservice.dto.request.UserCreateAccountRequest;
 import com.jmp.userservice.dto.request.UserUpdateAccountRequest;
 import com.jmp.userservice.dto.response.UserAccountResponse;

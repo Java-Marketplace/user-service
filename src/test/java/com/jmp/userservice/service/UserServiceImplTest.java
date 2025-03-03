@@ -1,4 +1,4 @@
-package com.jmp.userservice.unit.service;
+package com.jmp.userservice.service;
 
 import com.jmp.userservice.dto.request.UserCreateAccountRequest;
 import com.jmp.userservice.dto.request.UserUpdateAccountRequest;
@@ -9,7 +9,6 @@ import com.jmp.userservice.exception.model.UserNotFoundById;
 import com.jmp.userservice.mapper.UserMapper;
 import com.jmp.userservice.model.User;
 import com.jmp.userservice.repository.UserRepository;
-import com.jmp.userservice.service.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

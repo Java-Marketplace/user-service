@@ -1,10 +1,9 @@
-package com.jmp.userservice.unit.mapper;
+package com.jmp.userservice.mapper;
 
 import com.jmp.userservice.constant.UserStatus;
 import com.jmp.userservice.dto.request.UserCreateAccountRequest;
 import com.jmp.userservice.dto.request.UserUpdateAccountRequest;
 import com.jmp.userservice.dto.response.UserAccountResponse;
-import com.jmp.userservice.mapper.UserMapper;
 import com.jmp.userservice.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
