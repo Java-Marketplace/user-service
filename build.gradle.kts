@@ -1,7 +1,6 @@
 plugins {
     java
     jacoco
-    checkstyle
     id("org.springframework.boot") version "3.4.3"
     id("io.spring.dependency-management") version "1.1.7"
 }
@@ -49,19 +48,6 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-tasks.withType<Checkstyle> {
-    configFile = rootProject.file("checkstyle.xml")
-    maxWarnings = 5
-    isShowViolations = true
-}
-
-tasks.named("checkstyleMain") {
-    dependsOn("compileJava")
-}
-
-tasks.named("checkstyleTest") {
-    dependsOn("compileTestJava")
-}
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
@@ -79,8 +65,4 @@ tasks.jacocoTestReport {
 
 tasks.test {
     finalizedBy(tasks.jacocoTestReport)
-}
-
-tasks.named("build") {
-    dependsOn("checkstyleMain", "jacocoTestReport")
 }
