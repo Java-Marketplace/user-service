@@ -1,6 +1,7 @@
 package com.jmp.userservice.unit.service;
 
 import com.jmp.userservice.dto.request.UserCreateAccountRequest;
+import com.jmp.userservice.dto.request.UserUpdateAccountRequest;
 import com.jmp.userservice.dto.response.UserAccountResponse;
 import com.jmp.userservice.exception.model.EmailAlreadyUseException;
 import com.jmp.userservice.exception.model.PhoneAlreadyUseException;
@@ -53,21 +54,31 @@ class UserServiceImplTest {
         verify(userRepository).save(userModel);
         verify(userMapper).fromUserModelToUserAccountResponseDto(userModel);
     }
-    
+
     @Test
     void createUser_ShouldThrowException_WhenEmailIsAlreadyInUse() {
         UserCreateAccountRequest requestDto = createUserAccountRequestDto();
-        when(userRepository.existsByEmail(requestDto.getEmail())).thenReturn(true);
+        User existingUser = createUserModel();
+        existingUser.setEmail(requestDto.getEmail());
+
+        when(userRepository.findByEmail(requestDto.getEmail())).thenReturn(Optional.of(existingUser));
+
         assertThrows(EmailAlreadyUseException.class, () -> userService.createUser(requestDto));
-        verify(userRepository).existsByEmail(requestDto.getEmail());
+
+        verify(userRepository).findByEmail(requestDto.getEmail());
     }
 
     @Test
     void createUser_ShouldThrowException_WhenPhoneNumberIsAlreadyInUse() {
         UserCreateAccountRequest requestDto = createUserAccountRequestDto();
-        when(userRepository.existsByPhoneNumber(requestDto.getPhoneNumber())).thenReturn(true);
+        User existingUser = createUserModel();
+        existingUser.setPhoneNumber(requestDto.getPhoneNumber());
+
+        when(userRepository.findByPhoneNumber(requestDto.getPhoneNumber())).thenReturn(Optional.of(existingUser));
+
         assertThrows(PhoneAlreadyUseException.class, () -> userService.createUser(requestDto));
-        verify(userRepository).existsByPhoneNumber(requestDto.getPhoneNumber());
+
+        verify(userRepository).findByPhoneNumber(requestDto.getPhoneNumber());
     }
 
     @Test
@@ -92,6 +103,145 @@ class UserServiceImplTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
         assertThrows(UserNotFoundById.class, () -> userService.getUserById(userId));
         verify(userRepository).findById(userId);
+    }
+
+    @Test
+    void UpdateUser_ShouldReturnUserAccountResponse_WhenValidRequest() {
+        UUID userId = UUID.randomUUID();
+        UserUpdateAccountRequest dto = createUserUpdateRequestDto();
+
+        User existingUser = createUserModel();
+        existingUser.setId(userId);
+
+        UserAccountResponse expectedResponse = createUserAccountResponseDto(existingUser);
+        expectedResponse.setEmail("updated@example.com");
+        expectedResponse.setPhoneNumber("+123456789");
+        expectedResponse.setFirstName("UpdatedFirstName");
+        expectedResponse.setLastName("UpdatedLastName");
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+        when(userRepository.save(any(User.class))).thenReturn(existingUser);
+        when(userMapper.fromUserModelToUserAccountResponseDto(any(User.class))).thenReturn(expectedResponse);
+
+        UserAccountResponse actualResponse = userService.updateUser(userId, dto);
+
+        assertEquals(expectedResponse.getEmail(), actualResponse.getEmail());
+        assertEquals(expectedResponse.getPhoneNumber(), actualResponse.getPhoneNumber());
+        assertEquals(expectedResponse.getFirstName(), actualResponse.getFirstName());
+        assertEquals(expectedResponse.getLastName(), actualResponse.getLastName());
+
+        verify(userRepository, times(1)).save(any(User.class));
+        verify(userMapper, times(1)).fromUserModelToUserAccountResponseDto(any(User.class));
+    }
+
+    @Test
+    void updateUser_ShouldThrowException_WhenUserDoesNotExist() {
+        UUID userId = UUID.randomUUID();
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundById.class, () -> userService.getUserById(userId));
+    }
+
+    @Test
+    void updateUser_ShouldThrowException_WhenPhoneNumberIsAlreadyInUse() {
+        UUID userId = UUID.randomUUID();
+        UserUpdateAccountRequest dto = createUserUpdateRequestDto();
+
+        User existingUser = createUserModel();
+        existingUser.setId(userId);
+        existingUser.setEmail("existing@example.com");
+        existingUser.setPhoneNumber("+987654321");
+
+        User anotherUserWithSamePhone = createUserModel();
+        anotherUserWithSamePhone.setId(UUID.randomUUID());
+        anotherUserWithSamePhone.setPhoneNumber(dto.getPhoneNumber());
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+        when(userRepository.findByPhoneNumber(dto.getPhoneNumber())).thenReturn(Optional.of(anotherUserWithSamePhone));
+
+        assertThrows(PhoneAlreadyUseException.class, () -> userService.updateUser(userId, dto));
+
+        verify(userRepository).findById(userId);
+        verify(userRepository).findByPhoneNumber(dto.getPhoneNumber());
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void updateUser_ShouldReturnException_WhenEmailIsAlreadyInUse() {
+        UUID userId = UUID.randomUUID();
+        UserUpdateAccountRequest dto = createUserUpdateRequestDto();
+
+        User existingUser = createUserModel();
+        existingUser.setId(userId);
+        existingUser.setEmail("existing@example.com");
+        existingUser.setPhoneNumber("+987654321");
+
+        User anotherUserWithSameEmail = createUserModel();
+        anotherUserWithSameEmail.setId(UUID.randomUUID());
+        anotherUserWithSameEmail.setPhoneNumber(dto.getPhoneNumber());
+        anotherUserWithSameEmail.setEmail(dto.getEmail());
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+        when(userRepository.findByEmail(dto.getEmail())).thenReturn(Optional.of(anotherUserWithSameEmail));
+
+        assertThrows(EmailAlreadyUseException.class, () -> userService.updateUser(userId, dto));
+
+        verify(userRepository).findById(userId);
+        verify(userRepository).findByEmail(dto.getEmail());
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void updateUser_ShouldNotThrowException_WhenEmailBelongToUser() {
+        UUID userId = UUID.randomUUID();
+        UserUpdateAccountRequest requestDto = createUserUpdateRequestDto();
+        User existingUser = createUserModel();
+        existingUser.setId(userId);
+        existingUser.setEmail(requestDto.getEmail());
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+        when(userRepository.findByEmail(requestDto.getEmail())).thenReturn(Optional.of(existingUser));
+
+        assertDoesNotThrow(() -> userService.updateUser(userId, requestDto));
+        verify(userRepository).findById(userId);
+        verify(userRepository).findByEmail(requestDto.getEmail());
+    }
+
+    @Test
+    void updateUser_ShouldNotThrowException_WhenPhoneNumberBelongToUser() {
+        UUID userId = UUID.randomUUID();
+        UserUpdateAccountRequest dto = createUserUpdateRequestDto();
+        User existingUser = createUserModel();
+        existingUser.setId(userId);
+        existingUser.setPhoneNumber(dto.getPhoneNumber());
+        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+        when(userRepository.findByPhoneNumber(dto.getPhoneNumber())).thenReturn(Optional.of(existingUser));
+        assertDoesNotThrow(() -> userService.updateUser(userId, dto));
+        verify(userRepository).findById(userId);
+        verify(userRepository).findByPhoneNumber(dto.getPhoneNumber());
+    }
+
+    @Test
+    void deleteUser_ShouldReturnUserAccountResponse_WhenValidRequest() {
+        UUID userId = UUID.randomUUID();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(createUserModel()));
+        userService.deleteUser(userId);
+        verify(userRepository).findById(userId);
+    }
+
+    @Test
+    void deleteUser_ShouldThrowException_WhenUserDoesNotExist() {
+        UUID userId = UUID.randomUUID();
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundById.class, () -> userService.deleteUser(userId));
+    }
+
+    private UserUpdateAccountRequest createUserUpdateRequestDto(){
+        UserUpdateAccountRequest dto = new UserUpdateAccountRequest();
+        dto.setEmail("updated@example.com");
+        dto.setPhoneNumber("+123456789");
+        dto.setFirstName("UpdatedFirstName");
+        dto.setLastName("UpdatedLastName");
+        return dto;
     }
 
     private UserCreateAccountRequest createUserAccountRequestDto(){
