@@ -1,7 +1,6 @@
-package com.jmp.userservice.unit.model;
+package com.jmp.userservice.model;
 
 import com.jmp.userservice.constant.UserStatus;
-import com.jmp.userservice.model.User;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.lang.reflect.Method;

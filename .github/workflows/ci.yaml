@@ -38,10 +38,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build and Test with Gradle
-        run: ./gradlew clean build --no-daemon
-
-      - name: Run Checkstyle
-        run: ./gradlew checkstyleMain --no-daemon
+        run: ./gradlew build --no-daemon
 
       - name: Generate JaCoCo Report
         run: ./gradlew jacocoTestReport --no-daemon
