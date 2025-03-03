@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserAccountResponse createUser(UserCreateAccountRequest dto) {
-        validateUniqueUser(dto.getEmail(), dto.getPhoneNumber());
+        validateUniqueUser(null, dto.getEmail(), dto.getPhoneNumber());
         User user = userMapper.fromUserCreateAccountRequestDtoToUserModel(dto);
         userRepository.save(user);
         return userMapper.fromUserModelToUserAccountResponseDto(user);
@@ -41,6 +41,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserAccountResponse updateUser(UUID id, UserUpdateAccountRequest dto) {
         User userForUpdate = findUserById(id);
+        validateUniqueUser(id, dto.getEmail(), dto.getPhoneNumber());
         userMapper.updateUserModelFromUpdateAccountRequestDto(dto, userForUpdate);
         userRepository.save(userForUpdate);
         return userMapper.fromUserModelToUserAccountResponseDto(userForUpdate);
@@ -52,13 +53,14 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
     }
 
-    private void validateUniqueUser(String email, String phoneNumber) {
-        if (userRepository.existsByEmail(email)) {
-            throw new EmailAlreadyUseException();
-        }
-        if (userRepository.existsByPhoneNumber(phoneNumber)) {
-            throw new PhoneAlreadyUseException();
-        }
+    private void validateUniqueUser(UUID userId, String email, String phoneNumber) {
+        userRepository.findByEmail(email)
+                .filter(user -> userId == null || !userId.equals(user.getId()))
+                .ifPresent(user -> {throw new EmailAlreadyUseException();});
+
+        userRepository.findByPhoneNumber(phoneNumber)
+                .filter(user -> userId == null || !userId.equals(user.getId()))
+                .ifPresent(user -> {throw new PhoneAlreadyUseException();});
     }
 
     private User findUserById(UUID id) {
