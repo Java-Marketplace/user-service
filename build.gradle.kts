@@ -1,6 +1,7 @@
 plugins {
     java
     jacoco
+    id("application")
     id("org.springframework.boot") version "3.4.3"
     id("io.spring.dependency-management") version "1.1.7"
 }
@@ -12,6 +13,10 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
+}
+
+application {
+    mainClass = "com.jmp.userservice.UserMicroserviceApplication"
 }
 
 jacoco {
