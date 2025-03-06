@@ -1,12 +1,15 @@
 package com.jmp.userservice.dto.request;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class UserCreateAccountRequest {
+public class UserCreateRequest {
 
     @NotBlank(message = "Should not be empty")
     @Email(message = "This email is not correct format")
@@ -17,6 +20,7 @@ public class UserCreateAccountRequest {
     private String password;
 
     @NotBlank(message = "Should not be empty")
+    @Pattern(regexp = "^\\+?\\d{9,15}$", message = "Invalid phone number format")
     @Size(min = 10, max = 15, message = "The phone is not the correct length")
     private String phoneNumber;
 

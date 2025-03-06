@@ -52,6 +52,6 @@ public class GlobalErrorHandler {
                 status.value(),
                 status.getReasonPhrase(),
                 message
-        );
-    }
+            );
+        }
 }
