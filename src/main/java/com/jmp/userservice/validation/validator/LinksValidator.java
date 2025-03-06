@@ -41,7 +41,7 @@ public class LinksValidator implements ConstraintValidator<ValidLinks, List<Soci
         try {
             new URI(url).toURL();
             return true;
-        } catch (URISyntaxException | MalformedURLException e) {
+        } catch (URISyntaxException | MalformedURLException | IllegalArgumentException e) {
             return false;
         }
     }
