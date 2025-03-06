@@ -1,7 +1,7 @@
 package com.jmp.userservice.service;
 
-import com.jmp.userservice.dto.request.UserCreateRequest;
-import com.jmp.userservice.dto.request.UserUpdateRequest;
+import com.jmp.userservice.dto.request.CreateUserRequest;
+import com.jmp.userservice.dto.request.UpdateUserRequest;
 import com.jmp.userservice.dto.response.UserResponse;
 import com.jmp.userservice.exception.model.EmailAlreadyUseException;
 import com.jmp.userservice.exception.model.PhoneAlreadyUseException;
@@ -34,7 +34,7 @@ class UserServiceImplTest {
 
     @Test
     void createUser_ShouldReturnUserAccountResponse_WhenValidRequest() {
-        UserCreateRequest requestDto = createUserAccountRequestDto();
+        CreateUserRequest requestDto = createUserAccountRequestDto();
         User userModel = createUserModel();
         UserResponse responseDto = createUserAccountResponseDto(userModel);
 
@@ -57,7 +57,7 @@ class UserServiceImplTest {
 
     @Test
     void createUser_ShouldThrowException_WhenEmailIsAlreadyInUse() {
-        UserCreateRequest requestDto = createUserAccountRequestDto();
+        CreateUserRequest requestDto = createUserAccountRequestDto();
         User existingUser = createUserModel();
         existingUser.setEmail(requestDto.getEmail());
 
@@ -70,7 +70,7 @@ class UserServiceImplTest {
 
     @Test
     void createUser_ShouldThrowException_WhenPhoneNumberIsAlreadyInUse() {
-        UserCreateRequest requestDto = createUserAccountRequestDto();
+        CreateUserRequest requestDto = createUserAccountRequestDto();
         User existingUser = createUserModel();
         existingUser.setPhoneNumber(requestDto.getPhoneNumber());
 
@@ -108,7 +108,7 @@ class UserServiceImplTest {
     @Test
     void UpdateUser_ShouldReturnUserAccountResponse_WhenValidRequest() {
         UUID userId = UUID.randomUUID();
-        UserUpdateRequest dto = createUserUpdateRequestDto();
+        UpdateUserRequest dto = createUserUpdateRequestDto();
 
         User existingUser = createUserModel();
         existingUser.setId(userId);
@@ -144,7 +144,7 @@ class UserServiceImplTest {
     @Test
     void updateUser_ShouldThrowException_WhenPhoneNumberIsAlreadyInUse() {
         UUID userId = UUID.randomUUID();
-        UserUpdateRequest dto = createUserUpdateRequestDto();
+        UpdateUserRequest dto = createUserUpdateRequestDto();
 
         User existingUser = createUserModel();
         existingUser.setId(userId);
@@ -168,7 +168,7 @@ class UserServiceImplTest {
     @Test
     void updateUser_ShouldReturnException_WhenEmailIsAlreadyInUse() {
         UUID userId = UUID.randomUUID();
-        UserUpdateRequest dto = createUserUpdateRequestDto();
+        UpdateUserRequest dto = createUserUpdateRequestDto();
 
         User existingUser = createUserModel();
         existingUser.setId(userId);
@@ -193,7 +193,7 @@ class UserServiceImplTest {
     @Test
     void updateUser_ShouldNotThrowException_WhenEmailBelongToUser() {
         UUID userId = UUID.randomUUID();
-        UserUpdateRequest requestDto = createUserUpdateRequestDto();
+        UpdateUserRequest requestDto = createUserUpdateRequestDto();
         User existingUser = createUserModel();
         existingUser.setId(userId);
         existingUser.setEmail(requestDto.getEmail());
@@ -209,7 +209,7 @@ class UserServiceImplTest {
     @Test
     void updateUser_ShouldNotThrowException_WhenPhoneNumberBelongToUser() {
         UUID userId = UUID.randomUUID();
-        UserUpdateRequest dto = createUserUpdateRequestDto();
+        UpdateUserRequest dto = createUserUpdateRequestDto();
         User existingUser = createUserModel();
         existingUser.setId(userId);
         existingUser.setPhoneNumber(dto.getPhoneNumber());
@@ -235,8 +235,8 @@ class UserServiceImplTest {
         assertThrows(UserNotFoundByIdException.class, () -> userService.deleteUser(userId));
     }
 
-    private UserUpdateRequest createUserUpdateRequestDto() {
-        UserUpdateRequest dto = new UserUpdateRequest();
+    private UpdateUserRequest createUserUpdateRequestDto() {
+        UpdateUserRequest dto = new UpdateUserRequest();
         dto.setEmail("updated@example.com");
         dto.setPhoneNumber("+123456789");
         dto.setFirstName("UpdatedFirstName");
@@ -244,8 +244,8 @@ class UserServiceImplTest {
         return dto;
     }
 
-    private UserCreateRequest createUserAccountRequestDto() {
-        return new UserCreateRequest(
+    private CreateUserRequest createUserAccountRequestDto() {
+        return new CreateUserRequest(
                 "test@example.com", "SecurePass123!", "+1234567890", "John");
     }
 

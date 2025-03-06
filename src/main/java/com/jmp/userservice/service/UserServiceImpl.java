@@ -1,7 +1,7 @@
 package com.jmp.userservice.service;
 
-import com.jmp.userservice.dto.request.UserCreateRequest;
-import com.jmp.userservice.dto.request.UserUpdateRequest;
+import com.jmp.userservice.dto.request.CreateUserRequest;
+import com.jmp.userservice.dto.request.UpdateUserRequest;
 import com.jmp.userservice.dto.response.UserResponse;
 import com.jmp.userservice.exception.model.EmailAlreadyUseException;
 import com.jmp.userservice.exception.model.PhoneAlreadyUseException;
@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserResponse createUser(UserCreateRequest dto) {
+    public UserResponse createUser(CreateUserRequest dto) {
         validateUniqueUser(null, dto.getEmail(), dto.getPhoneNumber());
         User user = userMapper.toEntity(dto);
         userRepository.save(user);
@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserResponse updateUser(UUID id, UserUpdateRequest dto) {
+    public UserResponse updateUser(UUID id, UpdateUserRequest dto) {
         User userForUpdate = findUserById(id);
         validateUniqueUser(id, dto.getEmail(), dto.getPhoneNumber());
         userMapper.updateModel(dto, userForUpdate);

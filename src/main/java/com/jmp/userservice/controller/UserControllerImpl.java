@@ -1,8 +1,8 @@
 package com.jmp.userservice.controller;
 
 
-import com.jmp.userservice.dto.request.UserCreateRequest;
-import com.jmp.userservice.dto.request.UserUpdateRequest;
+import com.jmp.userservice.dto.request.CreateUserRequest;
+import com.jmp.userservice.dto.request.UpdateUserRequest;
 import com.jmp.userservice.dto.response.UserResponse;
 import com.jmp.userservice.service.UserService;
 import jakarta.validation.Valid;
@@ -21,7 +21,7 @@ public class UserControllerImpl implements UserController {
     @Override
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse createUser(@Valid @RequestBody UserCreateRequest dto) {
+    public UserResponse createUser(@Valid @RequestBody CreateUserRequest dto) {
         return userService.createUser(dto);
     }
 
@@ -35,13 +35,13 @@ public class UserControllerImpl implements UserController {
     @Override
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public UserResponse updateUser(@PathVariable UUID id, @Valid @RequestBody UserUpdateRequest dto) {
+    public UserResponse updateUser(@PathVariable UUID id, @Valid @RequestBody UpdateUserRequest dto) {
         return userService.updateUser(id, dto);
     }
 
     @Override
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable("id") UUID id) {
         userService.deleteUser(id);
     }

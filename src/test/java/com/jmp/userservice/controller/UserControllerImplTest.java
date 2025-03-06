@@ -1,8 +1,8 @@
 package com.jmp.userservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jmp.userservice.dto.request.UserCreateRequest;
-import com.jmp.userservice.dto.request.UserUpdateRequest;
+import com.jmp.userservice.dto.request.CreateUserRequest;
+import com.jmp.userservice.dto.request.UpdateUserRequest;
 import com.jmp.userservice.dto.response.UserResponse;
 import com.jmp.userservice.exception.model.EmailAlreadyUseException;
 import com.jmp.userservice.exception.model.PhoneAlreadyUseException;
@@ -43,7 +43,7 @@ class UserControllerImplTest {
 
     @Test
     void createUser_ShouldReturn201_WhenValidRequest() throws Exception {
-        UserCreateRequest requestDto = new UserCreateRequest(
+        CreateUserRequest requestDto = new CreateUserRequest(
                 "test@example.com",
                 "SecurePass123!",
                 "+1234567890",
@@ -51,7 +51,7 @@ class UserControllerImplTest {
         );
         UserResponse responseDto = createUserResponseDto();
 
-        doReturn(responseDto).when(userService).createUser(any(UserCreateRequest.class));
+        doReturn(responseDto).when(userService).createUser(any(CreateUserRequest.class));
 
         mvc.perform(post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -61,12 +61,12 @@ class UserControllerImplTest {
                 .andExpect(jsonPath("$.phoneNumber").value("+1234567890"))
                 .andExpect(jsonPath("$.firstName").value("John"))
                 .andExpect(jsonPath("$.status").value("ACTIVE"));
-        verify(userService, times(1)).createUser(any(UserCreateRequest.class));
+        verify(userService, times(1)).createUser(any(CreateUserRequest.class));
     }
 
     @Test
     void createUser_ShouldReturn400_WhenInvalidFieldInDtoRequest() throws Exception {
-        UserCreateRequest invalidRequestDto = new UserCreateRequest(
+        CreateUserRequest invalidRequestDto = new CreateUserRequest(
                 "", "123", "+1234567890", "John"
         );
         mvc.perform(post("/api/v1/users")
@@ -86,10 +86,10 @@ class UserControllerImplTest {
 
     @Test
     void createUser_ShouldReturn409_WhenEmailAlreadyExists() throws Exception {
-        UserCreateRequest request = createRequestDto();
+        CreateUserRequest request = createRequestDto();
 
         doThrow(new EmailAlreadyUseException())
-                .when(userService).createUser(any(UserCreateRequest.class));
+                .when(userService).createUser(any(CreateUserRequest.class));
 
         mvc.perform(post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -100,9 +100,9 @@ class UserControllerImplTest {
 
     @Test
     void createUser_ShouldReturn409_WhenPhoneNumberAlreadyExists() throws Exception {
-        UserCreateRequest request = createRequestDto();
+        CreateUserRequest request = createRequestDto();
         doThrow(new PhoneAlreadyUseException())
-                .when(userService).createUser(any(UserCreateRequest.class));
+                .when(userService).createUser(any(CreateUserRequest.class));
         mvc.perform(post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -140,11 +140,11 @@ class UserControllerImplTest {
     @Test
     void updateUser_ShouldReturn200_WhenValidRequest() throws Exception {
         UUID id = UUID.randomUUID();
-        UserUpdateRequest requestDto = createUserUpdateAccountRequestDto();
+        UpdateUserRequest requestDto = createUserUpdateAccountRequestDto();
         UserResponse responseDto = createUserResponseDto();
         responseDto.setId(id);
 
-        when(userService.updateUser(eq(id), any(UserUpdateRequest.class))).thenReturn(responseDto);
+        when(userService.updateUser(eq(id), any(UpdateUserRequest.class))).thenReturn(responseDto);
 
         mvc.perform(put("/api/v1/users/" + id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -158,9 +158,9 @@ class UserControllerImplTest {
     @Test
     void updateUser_ShouldReturn409_WhenPhoneNumberAlreadyExists() throws Exception {
         UUID id = UUID.randomUUID();
-        UserUpdateRequest requestDto = createUserUpdateAccountRequestDto();
+        UpdateUserRequest requestDto = createUserUpdateAccountRequestDto();
 
-        doThrow(new PhoneAlreadyUseException()).when(userService).updateUser(eq(id), any(UserUpdateRequest.class));
+        doThrow(new PhoneAlreadyUseException()).when(userService).updateUser(eq(id), any(UpdateUserRequest.class));
 
         mvc.perform(put("/api/v1/users/" + id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -172,9 +172,9 @@ class UserControllerImplTest {
     @Test
     void updateUser_ShouldReturn409_WhenEmailAlreadyExists() throws Exception {
         UUID id = UUID.randomUUID();
-        UserUpdateRequest requestDto = createUserUpdateAccountRequestDto();
+        UpdateUserRequest requestDto = createUserUpdateAccountRequestDto();
 
-        doThrow(new EmailAlreadyUseException()).when(userService).updateUser(eq(id), any(UserUpdateRequest.class));
+        doThrow(new EmailAlreadyUseException()).when(userService).updateUser(eq(id), any(UpdateUserRequest.class));
 
         mvc.perform(put("/api/v1/users/" + id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -186,9 +186,9 @@ class UserControllerImplTest {
     @Test
     void updateUser_ShouldReturn404_WhenUserNotFound() throws Exception {
         UUID id = UUID.randomUUID();
-        UserUpdateRequest requestDto = createUserUpdateAccountRequestDto();
+        UpdateUserRequest requestDto = createUserUpdateAccountRequestDto();
 
-        doThrow(new UserNotFoundByIdException()).when(userService).updateUser(eq(id), any(UserUpdateRequest.class));
+        doThrow(new UserNotFoundByIdException()).when(userService).updateUser(eq(id), any(UpdateUserRequest.class));
 
         mvc.perform(put("/api/v1/users/" + id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -199,7 +199,7 @@ class UserControllerImplTest {
     @Test
     void updateUser_ShouldReturn400_WhenSocialLinksIsInvalid() throws Exception {
         UUID id = UUID.randomUUID();
-        UserUpdateRequest requestDto = createUserUpdateAccountRequestDto();
+        UpdateUserRequest requestDto = createUserUpdateAccountRequestDto();
 
         SocialLink invalidLink = new SocialLink("telegram", "https://chat.mistral.ai/chat");
         invalidLink.setType("invalid");
@@ -216,7 +216,7 @@ class UserControllerImplTest {
     @Test
     void updateUser_ShouldReturn200_WhenSocialLinksIsValid() throws Exception {
         UUID id = UUID.randomUUID();
-        UserUpdateRequest requestDto = createUserUpdateAccountRequestDto();
+        UpdateUserRequest requestDto = createUserUpdateAccountRequestDto();
 
         SocialLink validLink1 = new SocialLink("telegram", "https://chat.mistral.ai/chat");
         SocialLink validLink2 = new SocialLink("vk", "https://chat.mistral.ai/chat");
@@ -229,7 +229,7 @@ class UserControllerImplTest {
         responseDto.setId(id);
         responseDto.setLinks(validLinks);
 
-        when(userService.updateUser(eq(id), any(UserUpdateRequest.class))).thenReturn(responseDto);
+        when(userService.updateUser(eq(id), any(UpdateUserRequest.class))).thenReturn(responseDto);
 
         mvc.perform(put("/api/v1/users/" + id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -242,7 +242,7 @@ class UserControllerImplTest {
         UUID id = UUID.randomUUID();
         doNothing().when(userService).deleteUser(id);
         mvc.perform(delete("/api/v1/users/" + id))
-                .andExpect(status().isIAmATeapot());
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -275,8 +275,8 @@ class UserControllerImplTest {
         return responseDto;
     }
 
-    private UserUpdateRequest createUserUpdateAccountRequestDto() {
-        UserUpdateRequest requestDto = new UserUpdateRequest();
+    private UpdateUserRequest createUserUpdateAccountRequestDto() {
+        UpdateUserRequest requestDto = new UpdateUserRequest();
         requestDto.setEmail("test@example.com");
         requestDto.setPhoneNumber("+1234567890");
         requestDto.setFirstName("John");
@@ -294,8 +294,8 @@ class UserControllerImplTest {
         return requestDto;
     }
 
-    private UserCreateRequest createRequestDto() {
-        return new UserCreateRequest(
+    private CreateUserRequest createRequestDto() {
+        return new CreateUserRequest(
                 "existing@example.com", "SecurePass123!", "+1234567890", "John");
     }
 

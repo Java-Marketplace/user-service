@@ -1,8 +1,8 @@
 package com.jmp.userservice.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jmp.userservice.dto.request.UserCreateRequest;
-import com.jmp.userservice.dto.request.UserUpdateRequest;
+import com.jmp.userservice.dto.request.CreateUserRequest;
+import com.jmp.userservice.dto.request.UpdateUserRequest;
 import com.jmp.userservice.dto.response.UserResponse;
 import com.jmp.userservice.model.User;
 import com.jmp.userservice.model.UserStatus;
@@ -43,7 +43,7 @@ class UserControllerIntegrationTest {
 
     @Test
     void shouldCreateUserSuccessfully() throws Exception {
-        UserCreateRequest dto = new UserCreateRequest("dima@it-top.academy", "1234567890",
+        CreateUserRequest dto = new CreateUserRequest("dima@it-top.academy", "1234567890",
                 "+123456789", "John");
         mockMvc.perform(post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -65,7 +65,7 @@ class UserControllerIntegrationTest {
 
     @Test
     void shouldUpdateUserSuccessfully() throws Exception {
-        UserCreateRequest dto = new UserCreateRequest("dima@it-top.academy", "1234567890",
+        CreateUserRequest dto = new CreateUserRequest("dima@it-top.academy", "1234567890",
                 "+1234567890", "John");
         mockMvc.perform(post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -76,7 +76,7 @@ class UserControllerIntegrationTest {
         assertTrue(userOptional.isPresent());
         User user = userOptional.get();
 
-        UserUpdateRequest updateDto = new UserUpdateRequest();
+        UpdateUserRequest updateDto = new UpdateUserRequest();
         updateDto.setPhoneNumber("+987654321");
         updateDto.setEmail("newdima@it-top.academy");
         updateDto.setLastName("newdima");
@@ -103,7 +103,7 @@ class UserControllerIntegrationTest {
 
     @Test
     void shouldDeleteUserSuccessfully() throws Exception {
-        UserCreateRequest dto = new UserCreateRequest("dima@it-top.academy", "1234567890",
+        CreateUserRequest dto = new CreateUserRequest("dima@it-top.academy", "1234567890",
                 "+123456789", "John");
 
         mockMvc.perform(post("/api/v1/users")
@@ -116,7 +116,7 @@ class UserControllerIntegrationTest {
         User user = userOptional.get();
 
         mockMvc.perform(delete("/api/v1/users/{id}", user.getId()))
-                .andExpect(status().isIAmATeapot());
+                .andExpect(status().isNoContent());
 
         Optional<User> deletedUser = userRepository.findByEmail("dima@it-top.academy");
         assertFalse(deletedUser.isPresent());
@@ -124,7 +124,7 @@ class UserControllerIntegrationTest {
 
     @Test
     void shouldGetUserByIdSuccessfully() throws Exception {
-        UserCreateRequest dto = new UserCreateRequest("dima@it-top.academy", "1234567890",
+        CreateUserRequest dto = new CreateUserRequest("dima@it-top.academy", "1234567890",
                 "+123456789", "John");
 
         mockMvc.perform(post("/api/v1/users")

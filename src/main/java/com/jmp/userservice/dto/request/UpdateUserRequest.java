@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-public class UserUpdateRequest {
+public class UpdateUserRequest {
 
     @NotBlank(message = "Should not be empty")
     @Email(message = "This email is not correct format")

@@ -9,7 +9,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class UserCreateRequest {
+public class CreateUserRequest {
 
     @NotBlank(message = "Should not be empty")
     @Email(message = "This email is not correct format")

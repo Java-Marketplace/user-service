@@ -1,7 +1,7 @@
 package com.jmp.userservice.mapper;
 
-import com.jmp.userservice.dto.request.UserCreateRequest;
-import com.jmp.userservice.dto.request.UserUpdateRequest;
+import com.jmp.userservice.dto.request.CreateUserRequest;
+import com.jmp.userservice.dto.request.UpdateUserRequest;
 import com.jmp.userservice.dto.response.UserResponse;
 import com.jmp.userservice.model.SocialLink;
 import com.jmp.userservice.model.User;
@@ -26,7 +26,7 @@ class UserMapperTest {
 
     @Test
     void toEntity_ShouldMapCorrectly() {
-        UserCreateRequest dto = new UserCreateRequest("test@example.com", "12345678",
+        CreateUserRequest dto = new CreateUserRequest("test@example.com", "12345678",
                 "12345678", "John");
         User user = userMapper.toEntity(dto);
 
@@ -44,7 +44,7 @@ class UserMapperTest {
 
     @Test
     void toEntity_ShouldHandleNullValues() {
-        UserCreateRequest dto = new UserCreateRequest(null, null, null, null);
+        CreateUserRequest dto = new CreateUserRequest(null, null, null, null);
         User user = userMapper.toEntity(dto);
         assertNotNull(user);
         assertNull(user.getEmail());
@@ -54,7 +54,7 @@ class UserMapperTest {
 
     @Test
     void toEntity_ShouldHandleEmptyStrings() {
-        UserCreateRequest dto = new UserCreateRequest("", "", "", "");
+        CreateUserRequest dto = new CreateUserRequest("", "", "", "");
         User user = userMapper.toEntity(dto);
         assertNotNull(user);
         assertEquals("", user.getEmail());
@@ -64,7 +64,7 @@ class UserMapperTest {
 
     @Test
     void toEntity_ShouldHandleMixedValues() {
-        UserCreateRequest dto = new UserCreateRequest("test@example.com", "12345678",
+        CreateUserRequest dto = new CreateUserRequest("test@example.com", "12345678",
                 "12345678", "");
         User user = userMapper.toEntity(dto);
 
@@ -122,7 +122,7 @@ class UserMapperTest {
 
     @Test
     void updateUserModelFromUpdateAccountRequestDto_ShouldUpdateAllFields() {
-        UserUpdateRequest dto = new UserUpdateRequest();
+        UpdateUserRequest dto = new UpdateUserRequest();
         dto.setEmail("new@example.com");
         dto.setPhoneNumber("12345678");
         dto.setFirstName("John");
@@ -201,7 +201,7 @@ class UserMapperTest {
 
     @Test
     void updateUserModelFromUpdateAccountRequestDto_ShouldUpdateFields() {
-        UserUpdateRequest dto = new UserUpdateRequest();
+        UpdateUserRequest dto = new UpdateUserRequest();
         dto.setEmail("new@example.com");
         dto.setPhoneNumber("12345678");
 
@@ -217,7 +217,7 @@ class UserMapperTest {
 
     @Test
     void updateModel_WithNullLinks_ShouldSetLinksToNull() {
-        UserUpdateRequest dto = new UserUpdateRequest();
+        UpdateUserRequest dto = new UpdateUserRequest();
         dto.setLinks(null);
 
         User user = new User();
@@ -232,7 +232,7 @@ class UserMapperTest {
 
     @Test
     void updateModel_WithExistingLinksAndNonEmptyNewLinks() {
-        UserUpdateRequest dto = new UserUpdateRequest();
+        UpdateUserRequest dto = new UpdateUserRequest();
         List<SocialLink> newLinks = new ArrayList<>();
         newLinks.add(new SocialLink("telegram", "https://twitter.com/johndoe"));
         dto.setLinks(newLinks);
@@ -251,7 +251,7 @@ class UserMapperTest {
 
     @Test
     void updateModel_WithEmptyLinks_ShouldClearExistingLinks() {
-        UserUpdateRequest dto = new UserUpdateRequest();
+        UpdateUserRequest dto = new UpdateUserRequest();
         dto.setLinks(new ArrayList<>());
 
         User user = new User();
@@ -266,7 +266,7 @@ class UserMapperTest {
 
     @Test
     void updateUserModelFromUpdateAccountRequestDto_WithNewLinks_ShouldUpdateLinks() {
-        UserUpdateRequest dto = new UserUpdateRequest();
+        UpdateUserRequest dto = new UpdateUserRequest();
         List<SocialLink> newLinks = new ArrayList<>();
         newLinks.add(new SocialLink("telegram", "https://linkedin.com/johndoe"));
         dto.setLinks(newLinks);
@@ -283,7 +283,7 @@ class UserMapperTest {
 
     @Test
     void updateModel_ShouldHandleNullValues() {
-        UserUpdateRequest dto = new UserUpdateRequest();
+        UpdateUserRequest dto = new UpdateUserRequest();
         dto.setEmail(null);
         dto.setPhoneNumber("12345678");
 
@@ -300,7 +300,7 @@ class UserMapperTest {
 
     @Test
     void updateUserModelFromUpdateAccountRequestDto_ShouldNotUpdateIgnoredFields() {
-        UserUpdateRequest dto = new UserUpdateRequest();
+        UpdateUserRequest dto = new UpdateUserRequest();
         dto.setEmail("new@example.com");
         dto.setPhoneNumber("12345678");
 
@@ -320,7 +320,7 @@ class UserMapperTest {
 
     @Test
     void updateModel_ShouldHandleEmptyStrings() {
-        UserUpdateRequest dto = new UserUpdateRequest();
+        UpdateUserRequest dto = new UpdateUserRequest();
         dto.setEmail("");
         dto.setPhoneNumber("");
 
@@ -336,7 +336,7 @@ class UserMapperTest {
 
     @Test
     void updateUserModelFromUpdateAccountRequestDto_ShouldUpdateNullFields() {
-        UserUpdateRequest dto = new UserUpdateRequest();
+        UpdateUserRequest dto = new UpdateUserRequest();
         dto.setEmail("new@example.com");
         dto.setPhoneNumber("12345678");
 
@@ -353,7 +353,7 @@ class UserMapperTest {
 
     @Test
     void updateModel_ShouldHandleAllFields() {
-        UserUpdateRequest dto = new UserUpdateRequest();
+        UpdateUserRequest dto = new UpdateUserRequest();
         dto.setEmail("new@example.com");
         dto.setPhoneNumber("12345678");
         dto.setFirstName("Jane");
