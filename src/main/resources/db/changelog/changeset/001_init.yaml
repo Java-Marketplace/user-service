@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
-      id: 1740747197055-1
-      author: kanaoki (generated)
+      id: 1741266337090-1
+      author: kanaoki
       objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
       changes:
         - createTable:
@@ -9,24 +9,22 @@ databaseChangeLog:
               - column:
                   constraints:
                     nullable: false
-                    primaryKey: true
-                    primaryKeyName: pk_user_links
                   name: user_id
                   type: UUID
               - column:
-                  name: links
+                  constraints:
+                    nullable: false
+                  name: link_type
                   type: VARCHAR(255)
               - column:
                   constraints:
                     nullable: false
-                    primaryKey: true
-                    primaryKeyName: pk_user_links
-                  name: link_type
+                  name: url
                   type: VARCHAR(255)
             tableName: user_links
   - changeSet:
-      id: 1740747197055-2
-      author: kanaoki (generated)
+      id: 1741266337090-2
+      author: kanaoki
       objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
       changes:
         - createTable:
@@ -57,8 +55,8 @@ databaseChangeLog:
                   name: last_name
                   type: VARCHAR(255)
               - column:
-                  name: birth_date
-                  type: VARCHAR(255)
+                  name: birthday
+                  type: DATE
               - column:
                   name: about_me
                   type: VARCHAR(255)
@@ -74,8 +72,8 @@ databaseChangeLog:
                   type: VARCHAR(255)
             tableName: users
   - changeSet:
-      id: 1740747197055-3
-      author: kanaoki (generated)
+      id: 1741266337090-3
+      author: kanaoki
       objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
       changes:
         - addUniqueConstraint:
@@ -83,8 +81,8 @@ databaseChangeLog:
             constraintName: uc_users_email
             tableName: users
   - changeSet:
-      id: 1740747197055-4
-      author: kanaoki (generated)
+      id: 1741266337090-4
+      author: kanaoki
       objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
       changes:
         - addUniqueConstraint:
@@ -92,8 +90,8 @@ databaseChangeLog:
             constraintName: uc_users_phonenumber
             tableName: users
   - changeSet:
-      id: 1740747197055-5
-      author: kanaoki (generated)
+      id: 1741266337090-5
+      author: kanaoki
       objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
       changes:
         - addForeignKeyConstraint:

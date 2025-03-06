@@ -1,9 +1,9 @@
 package com.jmp.userservice.exception;
 
-import com.jmp.userservice.dto.exception.GlobalErrorResponse;
+import com.jmp.userservice.dto.exception.ErrorResponse;
 import com.jmp.userservice.exception.model.EmailAlreadyUseException;
 import com.jmp.userservice.exception.model.PhoneAlreadyUseException;
-import com.jmp.userservice.exception.model.UserNotFoundById;
+import com.jmp.userservice.exception.model.UserNotFoundByIdException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,19 +20,19 @@ public class GlobalErrorHandler {
 
     @ExceptionHandler(EmailAlreadyUseException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public GlobalErrorResponse handleEmailAlreadyUseException(EmailAlreadyUseException e) {
+    public ErrorResponse handleEmailAlreadyUseException(EmailAlreadyUseException e) {
         return createGlobalErrorResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 
     @ExceptionHandler(PhoneAlreadyUseException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public GlobalErrorResponse handlePhoneAlreadyUseException(PhoneAlreadyUseException e) {
+    public ErrorResponse handlePhoneAlreadyUseException(PhoneAlreadyUseException e) {
         return createGlobalErrorResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 
-    @ExceptionHandler(UserNotFoundById.class)
+    @ExceptionHandler(UserNotFoundByIdException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public GlobalErrorResponse handleUserNotFoundById(UserNotFoundById e) {
+    public ErrorResponse handleUserNotFoundById(UserNotFoundByIdException e) {
         return createGlobalErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
@@ -46,12 +46,12 @@ public class GlobalErrorHandler {
         return ResponseEntity.badRequest().body(errors);
     }
 
-    private GlobalErrorResponse createGlobalErrorResponse(HttpStatus status, String message) {
-        return new GlobalErrorResponse(
-                new Timestamp(System.currentTimeMillis()),
+    private ErrorResponse createGlobalErrorResponse(HttpStatus status, String message) {
+        return new ErrorResponse(
+                Instant.now(),
                 status.value(),
                 status.getReasonPhrase(),
                 message
-        );
-    }
+            );
+        }
 }

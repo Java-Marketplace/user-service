@@ -1,8 +1,8 @@
 package com.jmp.userservice.exception.model;
 
-public class UserNotFoundById extends RuntimeException {
+public class UserNotFoundByIdException extends RuntimeException {
     private static final String ERROR_MESSAGE = "User not found by id";
-    public UserNotFoundById() {
+    public UserNotFoundByIdException() {
         super(ERROR_MESSAGE);
     }
 }

@@ -1,11 +1,11 @@
 package com.jmp.userservice.service;
 
-import com.jmp.userservice.dto.request.UserCreateAccountRequest;
-import com.jmp.userservice.dto.request.UserUpdateAccountRequest;
-import com.jmp.userservice.dto.response.UserAccountResponse;
+import com.jmp.userservice.dto.request.UserCreateRequest;
+import com.jmp.userservice.dto.request.UserUpdateRequest;
+import com.jmp.userservice.dto.response.UserResponse;
 import com.jmp.userservice.exception.model.EmailAlreadyUseException;
 import com.jmp.userservice.exception.model.PhoneAlreadyUseException;
-import com.jmp.userservice.exception.model.UserNotFoundById;
+import com.jmp.userservice.exception.model.UserNotFoundByIdException;
 import com.jmp.userservice.mapper.UserMapper;
 import com.jmp.userservice.model.User;
 import com.jmp.userservice.repository.UserRepository;
@@ -23,28 +23,28 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserAccountResponse createUser(UserCreateAccountRequest dto) {
+    public UserResponse createUser(UserCreateRequest dto) {
         validateUniqueUser(null, dto.getEmail(), dto.getPhoneNumber());
-        User user = userMapper.fromUserCreateAccountRequestDtoToUserModel(dto);
+        User user = userMapper.toEntity(dto);
         userRepository.save(user);
-        return userMapper.fromUserModelToUserAccountResponseDto(user);
+        return userMapper.toDto(user);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public UserAccountResponse getUserById(UUID id) {
+    public UserResponse getUserById(UUID id) {
         User user = findUserById(id);
-        return userMapper.fromUserModelToUserAccountResponseDto(user);
+        return userMapper.toDto(user);
     }
 
     @Transactional
     @Override
-    public UserAccountResponse updateUser(UUID id, UserUpdateAccountRequest dto) {
+    public UserResponse updateUser(UUID id, UserUpdateRequest dto) {
         User userForUpdate = findUserById(id);
         validateUniqueUser(id, dto.getEmail(), dto.getPhoneNumber());
-        userMapper.updateUserModelFromUpdateAccountRequestDto(dto, userForUpdate);
+        userMapper.updateModel(dto, userForUpdate);
         userRepository.save(userForUpdate);
-        return userMapper.fromUserModelToUserAccountResponseDto(userForUpdate);
+        return userMapper.toDto(userForUpdate);
     }
 
     @Override
@@ -65,6 +65,6 @@ public class UserServiceImpl implements UserService {
 
     private User findUserById(UUID id) {
         return userRepository.findById(id)
-                .orElseThrow(UserNotFoundById::new);
+                .orElseThrow(UserNotFoundByIdException::new);
     }
 }

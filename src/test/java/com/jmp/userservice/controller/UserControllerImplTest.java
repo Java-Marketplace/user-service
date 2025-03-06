@@ -1,13 +1,14 @@
 package com.jmp.userservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jmp.userservice.constant.UserStatus;
-import com.jmp.userservice.dto.request.UserCreateAccountRequest;
-import com.jmp.userservice.dto.request.UserUpdateAccountRequest;
-import com.jmp.userservice.dto.response.UserAccountResponse;
+import com.jmp.userservice.dto.request.UserCreateRequest;
+import com.jmp.userservice.dto.request.UserUpdateRequest;
+import com.jmp.userservice.dto.response.UserResponse;
 import com.jmp.userservice.exception.model.EmailAlreadyUseException;
 import com.jmp.userservice.exception.model.PhoneAlreadyUseException;
-import com.jmp.userservice.exception.model.UserNotFoundById;
+import com.jmp.userservice.exception.model.UserNotFoundByIdException;
+import com.jmp.userservice.model.SocialLink;
+import com.jmp.userservice.model.UserStatus;
 import com.jmp.userservice.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +18,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -49,15 +51,15 @@ class UserControllerImplTest {
 
     @Test
     void createUser_ShouldReturn201_WhenValidRequest() throws Exception {
-        UserCreateAccountRequest requestDto = new UserCreateAccountRequest(
+        UserCreateRequest requestDto = new UserCreateRequest(
                 "test@example.com",
                 "SecurePass123!",
                 "+1234567890",
                 "John"
         );
-        UserAccountResponse responseDto = createUserResponseDto();
+        UserResponse responseDto = createUserResponseDto();
 
-        doReturn(responseDto).when(userService).createUser(any(UserCreateAccountRequest.class));
+        doReturn(responseDto).when(userService).createUser(any(UserCreateRequest.class));
 
         mvc.perform(post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -67,12 +69,12 @@ class UserControllerImplTest {
                 .andExpect(jsonPath("$.phoneNumber").value("+1234567890"))
                 .andExpect(jsonPath("$.firstName").value("John"))
                 .andExpect(jsonPath("$.status").value("ACTIVE"));
-        verify(userService, times(1)).createUser(any(UserCreateAccountRequest.class));
+        verify(userService, times(1)).createUser(any(UserCreateRequest.class));
     }
 
     @Test
     void createUser_ShouldReturn400_WhenInvalidFieldInDtoRequest() throws Exception {
-        UserCreateAccountRequest invalidRequestDto = new UserCreateAccountRequest(
+        UserCreateRequest invalidRequestDto = new UserCreateRequest(
                 "", "123", "+1234567890", "John"
         );
         mvc.perform(post("/api/v1/users")
@@ -92,10 +94,10 @@ class UserControllerImplTest {
 
     @Test
     void createUser_ShouldReturn409_WhenEmailAlreadyExists() throws Exception {
-        UserCreateAccountRequest request = createRequestDto();
+        UserCreateRequest request = createRequestDto();
 
         doThrow(new EmailAlreadyUseException())
-                .when(userService).createUser(any(UserCreateAccountRequest.class));
+                .when(userService).createUser(any(UserCreateRequest.class));
 
         mvc.perform(post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -106,9 +108,9 @@ class UserControllerImplTest {
 
     @Test
     void createUser_ShouldReturn409_WhenPhoneNumberAlreadyExists() throws Exception {
-        UserCreateAccountRequest request = createRequestDto();
+        UserCreateRequest request = createRequestDto();
         doThrow(new PhoneAlreadyUseException())
-                .when(userService).createUser(any(UserCreateAccountRequest.class));
+                .when(userService).createUser(any(UserCreateRequest.class));
         mvc.perform(post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -118,7 +120,7 @@ class UserControllerImplTest {
 
     @Test
     void getUserById_ShouldReturn200_WhenValidRequest() throws Exception {
-        UserAccountResponse responseDto = createUserResponseDto();
+        UserResponse responseDto = createUserResponseDto();
         doReturn(responseDto).when(userService).getUserById(responseDto.getId());
 
         mvc.perform(get("/api/v1/users/" + responseDto.getId()))
@@ -132,7 +134,7 @@ class UserControllerImplTest {
 
     @Test
     void getUserById_ShouldReturn404_WhenUserDoesNotExist() throws Exception {
-        doThrow(new UserNotFoundById()).when(userService).getUserById(any());
+        doThrow(new UserNotFoundByIdException()).when(userService).getUserById(any());
         mvc.perform(get("/api/v1/users/" + UUID.randomUUID()))
                 .andExpect(status().isNotFound());
     }
@@ -146,11 +148,11 @@ class UserControllerImplTest {
     @Test
     void updateUser_ShouldReturn200_WhenValidRequest() throws Exception {
         UUID id = UUID.randomUUID();
-        UserUpdateAccountRequest requestDto = createUserUpdateAccountRequestDto();
-        UserAccountResponse responseDto = createUserResponseDto();
+        UserUpdateRequest requestDto = createUserUpdateAccountRequestDto();
+        UserResponse responseDto = createUserResponseDto();
         responseDto.setId(id);
 
-        when(userService.updateUser(eq(id), any(UserUpdateAccountRequest.class))).thenReturn(responseDto);
+        when(userService.updateUser(eq(id), any(UserUpdateRequest.class))).thenReturn(responseDto);
 
         mvc.perform(put("/api/v1/users/" + id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -164,9 +166,9 @@ class UserControllerImplTest {
     @Test
     void updateUser_ShouldReturn409_WhenPhoneNumberAlreadyExists() throws Exception {
         UUID id = UUID.randomUUID();
-        UserUpdateAccountRequest requestDto = createUserUpdateAccountRequestDto();
+        UserUpdateRequest requestDto = createUserUpdateAccountRequestDto();
 
-        doThrow(new PhoneAlreadyUseException()).when(userService).updateUser(eq(id), any(UserUpdateAccountRequest.class));
+        doThrow(new PhoneAlreadyUseException()).when(userService).updateUser(eq(id), any(UserUpdateRequest.class));
 
         mvc.perform(put("/api/v1/users/" + id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -178,9 +180,9 @@ class UserControllerImplTest {
     @Test
     void updateUser_ShouldReturn409_WhenEmailAlreadyExists() throws Exception {
         UUID id = UUID.randomUUID();
-        UserUpdateAccountRequest requestDto = createUserUpdateAccountRequestDto();
+        UserUpdateRequest requestDto = createUserUpdateAccountRequestDto();
 
-        doThrow(new EmailAlreadyUseException()).when(userService).updateUser(eq(id), any(UserUpdateAccountRequest.class));
+        doThrow(new EmailAlreadyUseException()).when(userService).updateUser(eq(id), any(UserUpdateRequest.class));
 
         mvc.perform(put("/api/v1/users/" + id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -192,9 +194,9 @@ class UserControllerImplTest {
     @Test
     void updateUser_ShouldReturn404_WhenUserNotFound() throws Exception {
         UUID id = UUID.randomUUID();
-        UserUpdateAccountRequest requestDto = createUserUpdateAccountRequestDto();
+        UserUpdateRequest requestDto = createUserUpdateAccountRequestDto();
 
-        doThrow(new UserNotFoundById()).when(userService).updateUser(eq(id), any(UserUpdateAccountRequest.class));
+        doThrow(new UserNotFoundByIdException()).when(userService).updateUser(eq(id), any(UserUpdateRequest.class));
 
         mvc.perform(put("/api/v1/users/" + id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -205,11 +207,12 @@ class UserControllerImplTest {
     @Test
     void updateUser_ShouldReturn400_WhenSocialLinksIsInvalid() throws Exception {
         UUID id = UUID.randomUUID();
-        UserUpdateAccountRequest requestDto = createUserUpdateAccountRequestDto();
+        UserUpdateRequest requestDto = createUserUpdateAccountRequestDto();
 
-        // Setting invalid links
-        Map<String, String> invalidLinks = new HashMap<>();
-        invalidLinks.put("social", "invalid");
+        SocialLink invalidLink = new SocialLink("telegram", "https://chat.mistral.ai/chat");
+        invalidLink.setType("invalid");
+        List<SocialLink> invalidLinks = new ArrayList<>();
+        invalidLinks.add(invalidLink);
         requestDto.setLinks(invalidLinks);
 
         mvc.perform(put("/api/v1/users/" + id)
@@ -221,19 +224,20 @@ class UserControllerImplTest {
     @Test
     void updateUser_ShouldReturn200_WhenSocialLinksIsValid() throws Exception {
         UUID id = UUID.randomUUID();
-        UserUpdateAccountRequest requestDto = createUserUpdateAccountRequestDto();
+        UserUpdateRequest requestDto = createUserUpdateAccountRequestDto();
 
-        // Setting valid links
-        Map<String, String> validLinks = new HashMap<>();
-        validLinks.put("telegram", "valid");
-        validLinks.put("vk", "valid");
-        requestDto.setLinks(validLinks);
+        SocialLink validLink1 = new SocialLink("telegram", "https://chat.mistral.ai/chat");
+        SocialLink validLink2 = new SocialLink("vk", "https://chat.mistral.ai/chat");
 
-        UserAccountResponse responseDto = createUserResponseDto();
+        List<SocialLink> validLinks = new ArrayList<>();
+        validLinks.add(validLink1);
+        validLinks.add(validLink2);
+
+        UserResponse responseDto = createUserResponseDto();
         responseDto.setId(id);
         responseDto.setLinks(validLinks);
 
-        when(userService.updateUser(eq(id), any(UserUpdateAccountRequest.class))).thenReturn(responseDto);
+        when(userService.updateUser(eq(id), any(UserUpdateRequest.class))).thenReturn(responseDto);
 
         mvc.perform(put("/api/v1/users/" + id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -252,45 +256,45 @@ class UserControllerImplTest {
     @Test
     void deleteUser_ShouldReturn404_WhenUserNotFound() throws Exception {
         UUID id = UUID.randomUUID();
-        doThrow(new UserNotFoundById()).when(userService).deleteUser(id);
+        doThrow(new UserNotFoundByIdException()).when(userService).deleteUser(id);
         mvc.perform(delete("/api/v1/users/" + id))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void deleteUser_ShouldReturn404_WhenUserIdIsEmpty() throws Exception {
-        doThrow(new UserNotFoundById()).when(userService).deleteUser(any());
+        doThrow(new UserNotFoundByIdException()).when(userService).deleteUser(any());
         mvc.perform(delete("/api/v1/users/"))
                 .andExpect(status().isNotFound());
     }
 
-    private UserAccountResponse createUserResponseDto() {
-        UserAccountResponse responseDto = new UserAccountResponse();
+    private UserResponse createUserResponseDto() {
+        UserResponse responseDto = new UserResponse();
         responseDto.setId(UUID.randomUUID());
         responseDto.setEmail("test@example.com");
         responseDto.setPhoneNumber("+1234567890");
         responseDto.setFirstName("John");
         responseDto.setLastName("Doe");
-        responseDto.setBirthDate("1990-01-01");
+        responseDto.setBirthday(LocalDate.parse("1990-01-01"));
         responseDto.setAboutMe("Software Engineer");
-        responseDto.setLinks(Map.of());
-        responseDto.setRegistrationDate(new Timestamp(System.currentTimeMillis()));
+        responseDto.setLinks(List.of());
+        responseDto.setRegistrationDate(LocalDateTime.now());
         responseDto.setStatus(UserStatus.ACTIVE);
         return responseDto;
     }
 
-    private UserUpdateAccountRequest createUserUpdateAccountRequestDto() {
-        UserUpdateAccountRequest requestDto = new UserUpdateAccountRequest();
+    private UserUpdateRequest createUserUpdateAccountRequestDto() {
+        UserUpdateRequest requestDto = new UserUpdateRequest();
         requestDto.setEmail("test@example.com");
         requestDto.setPhoneNumber("+1234567890");
         requestDto.setFirstName("John");
         requestDto.setLastName("Doe");
-        requestDto.setBirthDate("1990-01-01");
+        requestDto.setBirthday(LocalDate.parse("1990-01-01"));
         requestDto.setAboutMe("Software developer with experience in Java and Spring Boot");
 
-        Map<String, String> links = new HashMap<>();
-        links.put("telegram", "https://github.com/johndoe");
-        links.put("vk", "https://linkedin.com/in/johndoe");
+        List<SocialLink> links = new ArrayList<>();
+        links.add(new SocialLink("telegram", "https://github.com/johndoe"));
+        links.add(new SocialLink("vk", "https://linkedin.com/in/johndoe"));
         requestDto.setLinks(links);
 
         requestDto.setStatus(UserStatus.ACTIVE);
@@ -298,8 +302,8 @@ class UserControllerImplTest {
         return requestDto;
     }
 
-    private UserCreateAccountRequest createRequestDto() {
-        return new UserCreateAccountRequest(
+    private UserCreateRequest createRequestDto() {
+        return new UserCreateRequest(
                 "existing@example.com", "SecurePass123!", "+1234567890", "John");
     }
 }

@@ -1,9 +1,9 @@
 package com.jmp.userservice.controller;
 
 
-import com.jmp.userservice.dto.request.UserCreateAccountRequest;
-import com.jmp.userservice.dto.request.UserUpdateAccountRequest;
-import com.jmp.userservice.dto.response.UserAccountResponse;
+import com.jmp.userservice.dto.request.UserCreateRequest;
+import com.jmp.userservice.dto.request.UserUpdateRequest;
+import com.jmp.userservice.dto.response.UserResponse;
 import com.jmp.userservice.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,21 +21,21 @@ public class UserControllerImpl implements UserController {
     @Override
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserAccountResponse createUser(@Valid @RequestBody UserCreateAccountRequest dto) {
+    public UserResponse createUser(@Valid @RequestBody UserCreateRequest dto) {
         return userService.createUser(dto);
     }
 
     @Override
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public UserAccountResponse getUserById(@PathVariable("id") UUID id) {
+    public UserResponse getUserById(@PathVariable UUID id) {
         return userService.getUserById(id);
     }
 
     @Override
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public UserAccountResponse updateUser(@PathVariable("id") UUID id, @Valid @RequestBody UserUpdateAccountRequest dto) {
+    public UserResponse updateUser(@PathVariable UUID id, @Valid @RequestBody UserUpdateRequest dto) {
         return userService.updateUser(id, dto);
     }
 

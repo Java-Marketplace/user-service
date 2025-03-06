@@ -1,10 +1,13 @@
 package com.jmp.userservice.mapper;
 
-import com.jmp.userservice.dto.request.UserCreateAccountRequest;
-import com.jmp.userservice.dto.request.UserUpdateAccountRequest;
-import com.jmp.userservice.dto.response.UserAccountResponse;
+import com.jmp.userservice.dto.request.UserCreateRequest;
+import com.jmp.userservice.dto.request.UserUpdateRequest;
+import com.jmp.userservice.dto.response.UserResponse;
 import com.jmp.userservice.model.User;
-import org.mapstruct.*;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
@@ -13,11 +16,11 @@ public interface UserMapper {
     @Mapping(target = "email", source = "email")
     @Mapping(target = "phoneNumber", source = "phoneNumber")
     @Mapping(target = "firstName", source = "firstName")
-    User fromUserCreateAccountRequestDtoToUserModel(UserCreateAccountRequest dto);
+    User toEntity(UserCreateRequest dto);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "registrationDate", ignore = true)
-    void updateUserModelFromUpdateAccountRequestDto(UserUpdateAccountRequest dto, @MappingTarget User user);
+    void updateModel(UserUpdateRequest dto, @MappingTarget User user);
 
-    UserAccountResponse fromUserModelToUserAccountResponseDto(User user);
+    UserResponse toDto(User user);
 }

@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidLinks {
-    String message() default "Links is not allowed";
+    String message() default "Links are not allowed or invalid";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

@@ -1,11 +1,11 @@
 package com.jmp.userservice.service;
 
-import com.jmp.userservice.dto.request.UserCreateAccountRequest;
-import com.jmp.userservice.dto.request.UserUpdateAccountRequest;
-import com.jmp.userservice.dto.response.UserAccountResponse;
+import com.jmp.userservice.dto.request.UserCreateRequest;
+import com.jmp.userservice.dto.request.UserUpdateRequest;
+import com.jmp.userservice.dto.response.UserResponse;
 import com.jmp.userservice.exception.model.EmailAlreadyUseException;
 import com.jmp.userservice.exception.model.PhoneAlreadyUseException;
-import com.jmp.userservice.exception.model.UserNotFoundById;
+import com.jmp.userservice.exception.model.UserNotFoundByIdException;
 import com.jmp.userservice.mapper.UserMapper;
 import com.jmp.userservice.model.User;
 import com.jmp.userservice.repository.UserRepository;
@@ -14,11 +14,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -33,15 +34,15 @@ class UserServiceImplTest {
 
     @Test
     void createUser_ShouldReturnUserAccountResponse_WhenValidRequest() {
-        UserCreateAccountRequest requestDto = createUserAccountRequestDto();
+        UserCreateRequest requestDto = createUserAccountRequestDto();
         User userModel = createUserModel();
-        UserAccountResponse responseDto = createUserAccountResponseDto(userModel);
+        UserResponse responseDto = createUserAccountResponseDto(userModel);
 
-        when(userMapper.fromUserCreateAccountRequestDtoToUserModel(requestDto)).thenReturn(userModel);
+        when(userMapper.toEntity(requestDto)).thenReturn(userModel);
         when(userRepository.save(userModel)).thenReturn(userModel);
-        when(userMapper.fromUserModelToUserAccountResponseDto(userModel)).thenReturn(responseDto);
+        when(userMapper.toDto(userModel)).thenReturn(responseDto);
 
-        UserAccountResponse actualResponse = userService.createUser(requestDto);
+        UserResponse actualResponse = userService.createUser(requestDto);
 
         assertNotNull(actualResponse);
         assertEquals(responseDto.getId(), actualResponse.getId());
@@ -49,14 +50,14 @@ class UserServiceImplTest {
         assertEquals(responseDto.getFirstName(), actualResponse.getFirstName());
         assertEquals(responseDto.getPhoneNumber(), actualResponse.getPhoneNumber());
 
-        verify(userMapper).fromUserCreateAccountRequestDtoToUserModel(requestDto);
+        verify(userMapper).toEntity(requestDto);
         verify(userRepository).save(userModel);
-        verify(userMapper).fromUserModelToUserAccountResponseDto(userModel);
+        verify(userMapper).toDto(userModel);
     }
 
     @Test
     void createUser_ShouldThrowException_WhenEmailIsAlreadyInUse() {
-        UserCreateAccountRequest requestDto = createUserAccountRequestDto();
+        UserCreateRequest requestDto = createUserAccountRequestDto();
         User existingUser = createUserModel();
         existingUser.setEmail(requestDto.getEmail());
 
@@ -69,7 +70,7 @@ class UserServiceImplTest {
 
     @Test
     void createUser_ShouldThrowException_WhenPhoneNumberIsAlreadyInUse() {
-        UserCreateAccountRequest requestDto = createUserAccountRequestDto();
+        UserCreateRequest requestDto = createUserAccountRequestDto();
         User existingUser = createUserModel();
         existingUser.setPhoneNumber(requestDto.getPhoneNumber());
 
@@ -83,12 +84,12 @@ class UserServiceImplTest {
     @Test
     void getUser_ShouldReturnUserAccountResponse_WhenValidRequest() {
         User userModel = createUserModel();
-        UserAccountResponse responseDto = createUserAccountResponseDto(userModel);
+        UserResponse responseDto = createUserAccountResponseDto(userModel);
 
         when(userRepository.findById(userModel.getId())).thenReturn(Optional.of(userModel));
-        when(userMapper.fromUserModelToUserAccountResponseDto(userModel)).thenReturn(responseDto);
+        when(userMapper.toDto(userModel)).thenReturn(responseDto);
 
-        UserAccountResponse actualResponse = userService.getUserById(userModel.getId());
+        UserResponse actualResponse = userService.getUserById(userModel.getId());
         assertNotNull(actualResponse);
         assertEquals(responseDto.getId(), actualResponse.getId());
         assertEquals(responseDto.getEmail(), actualResponse.getEmail());
@@ -100,19 +101,19 @@ class UserServiceImplTest {
     void getUser_ShouldThrowException_WhenUserDoesNotExist() {
         UUID userId = UUID.randomUUID();
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
-        assertThrows(UserNotFoundById.class, () -> userService.getUserById(userId));
+        assertThrows(UserNotFoundByIdException.class, () -> userService.getUserById(userId));
         verify(userRepository).findById(userId);
     }
 
     @Test
     void UpdateUser_ShouldReturnUserAccountResponse_WhenValidRequest() {
         UUID userId = UUID.randomUUID();
-        UserUpdateAccountRequest dto = createUserUpdateRequestDto();
+        UserUpdateRequest dto = createUserUpdateRequestDto();
 
         User existingUser = createUserModel();
         existingUser.setId(userId);
 
-        UserAccountResponse expectedResponse = createUserAccountResponseDto(existingUser);
+        UserResponse expectedResponse = createUserAccountResponseDto(existingUser);
         expectedResponse.setEmail("updated@example.com");
         expectedResponse.setPhoneNumber("+123456789");
         expectedResponse.setFirstName("UpdatedFirstName");
@@ -120,9 +121,9 @@ class UserServiceImplTest {
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
         when(userRepository.save(any(User.class))).thenReturn(existingUser);
-        when(userMapper.fromUserModelToUserAccountResponseDto(any(User.class))).thenReturn(expectedResponse);
+        when(userMapper.toDto(any(User.class))).thenReturn(expectedResponse);
 
-        UserAccountResponse actualResponse = userService.updateUser(userId, dto);
+        UserResponse actualResponse = userService.updateUser(userId, dto);
 
         assertEquals(expectedResponse.getEmail(), actualResponse.getEmail());
         assertEquals(expectedResponse.getPhoneNumber(), actualResponse.getPhoneNumber());
@@ -130,20 +131,20 @@ class UserServiceImplTest {
         assertEquals(expectedResponse.getLastName(), actualResponse.getLastName());
 
         verify(userRepository, times(1)).save(any(User.class));
-        verify(userMapper, times(1)).fromUserModelToUserAccountResponseDto(any(User.class));
+        verify(userMapper, times(1)).toDto(any(User.class));
     }
 
     @Test
     void updateUser_ShouldThrowException_WhenUserDoesNotExist() {
         UUID userId = UUID.randomUUID();
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
-        assertThrows(UserNotFoundById.class, () -> userService.getUserById(userId));
+        assertThrows(UserNotFoundByIdException.class, () -> userService.getUserById(userId));
     }
 
     @Test
     void updateUser_ShouldThrowException_WhenPhoneNumberIsAlreadyInUse() {
         UUID userId = UUID.randomUUID();
-        UserUpdateAccountRequest dto = createUserUpdateRequestDto();
+        UserUpdateRequest dto = createUserUpdateRequestDto();
 
         User existingUser = createUserModel();
         existingUser.setId(userId);
@@ -167,7 +168,7 @@ class UserServiceImplTest {
     @Test
     void updateUser_ShouldReturnException_WhenEmailIsAlreadyInUse() {
         UUID userId = UUID.randomUUID();
-        UserUpdateAccountRequest dto = createUserUpdateRequestDto();
+        UserUpdateRequest dto = createUserUpdateRequestDto();
 
         User existingUser = createUserModel();
         existingUser.setId(userId);
@@ -192,7 +193,7 @@ class UserServiceImplTest {
     @Test
     void updateUser_ShouldNotThrowException_WhenEmailBelongToUser() {
         UUID userId = UUID.randomUUID();
-        UserUpdateAccountRequest requestDto = createUserUpdateRequestDto();
+        UserUpdateRequest requestDto = createUserUpdateRequestDto();
         User existingUser = createUserModel();
         existingUser.setId(userId);
         existingUser.setEmail(requestDto.getEmail());
@@ -208,7 +209,7 @@ class UserServiceImplTest {
     @Test
     void updateUser_ShouldNotThrowException_WhenPhoneNumberBelongToUser() {
         UUID userId = UUID.randomUUID();
-        UserUpdateAccountRequest dto = createUserUpdateRequestDto();
+        UserUpdateRequest dto = createUserUpdateRequestDto();
         User existingUser = createUserModel();
         existingUser.setId(userId);
         existingUser.setPhoneNumber(dto.getPhoneNumber());
@@ -231,11 +232,11 @@ class UserServiceImplTest {
     void deleteUser_ShouldThrowException_WhenUserDoesNotExist() {
         UUID userId = UUID.randomUUID();
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
-        assertThrows(UserNotFoundById.class, () -> userService.deleteUser(userId));
+        assertThrows(UserNotFoundByIdException.class, () -> userService.deleteUser(userId));
     }
 
-    private UserUpdateAccountRequest createUserUpdateRequestDto(){
-        UserUpdateAccountRequest dto = new UserUpdateAccountRequest();
+    private UserUpdateRequest createUserUpdateRequestDto(){
+        UserUpdateRequest dto = new UserUpdateRequest();
         dto.setEmail("updated@example.com");
         dto.setPhoneNumber("+123456789");
         dto.setFirstName("UpdatedFirstName");
@@ -243,8 +244,8 @@ class UserServiceImplTest {
         return dto;
     }
 
-    private UserCreateAccountRequest createUserAccountRequestDto(){
-        return new UserCreateAccountRequest(
+    private UserCreateRequest createUserAccountRequestDto(){
+        return new UserCreateRequest(
                 "test@example.com", "SecurePass123!", "+1234567890", "John");
     }
 
@@ -257,8 +258,8 @@ class UserServiceImplTest {
         return user;
     }
 
-    private UserAccountResponse createUserAccountResponseDto(User user){
-        UserAccountResponse response = new UserAccountResponse();
+    private UserResponse createUserAccountResponseDto(User user){
+        UserResponse response = new UserResponse();
         response.setId(user.getId());
         response.setEmail(user.getEmail());
         response.setPhoneNumber(user.getPhoneNumber());

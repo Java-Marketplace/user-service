@@ -1,11 +1,11 @@
 package com.jmp.userservice.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jmp.userservice.constant.UserStatus;
-import com.jmp.userservice.dto.request.UserCreateAccountRequest;
-import com.jmp.userservice.dto.request.UserUpdateAccountRequest;
-import com.jmp.userservice.dto.response.UserAccountResponse;
+import com.jmp.userservice.dto.request.UserCreateRequest;
+import com.jmp.userservice.dto.request.UserUpdateRequest;
+import com.jmp.userservice.dto.response.UserResponse;
 import com.jmp.userservice.model.User;
+import com.jmp.userservice.model.UserStatus;
 import com.jmp.userservice.repository.UserRepository;
 import com.jmp.userservice.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,7 +43,7 @@ class UserControllerIntegrationTest {
 
     @Test
     void shouldCreateUserSuccessfully() throws Exception {
-        UserCreateAccountRequest dto = new UserCreateAccountRequest("dima@it-top.academy", "1234567890",
+        UserCreateRequest dto = new UserCreateRequest("dima@it-top.academy", "1234567890",
                 "+123456789", "John");
         mockMvc.perform(post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -56,7 +57,7 @@ class UserControllerIntegrationTest {
         assertEquals("+123456789", user.get().getPhoneNumber());
         assertEquals("dima@it-top.academy", user.get().getEmail());
 
-        UserAccountResponse createUser = userService.getUserById(user.get().getId());
+        UserResponse createUser = userService.getUserById(user.get().getId());
         assertNotNull(createUser);
         assertEquals("dima@it-top.academy", createUser.getEmail());
         assertEquals("+123456789", createUser.getPhoneNumber());
@@ -64,8 +65,8 @@ class UserControllerIntegrationTest {
 
     @Test
     void shouldUpdateUserSuccessfully() throws Exception {
-        UserCreateAccountRequest dto = new UserCreateAccountRequest("dima@it-top.academy", "1234567890",
-                "+123456789", "John");
+        UserCreateRequest dto = new UserCreateRequest("dima@it-top.academy", "1234567890",
+                "+1234567890", "John");
         mockMvc.perform(post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
@@ -75,12 +76,12 @@ class UserControllerIntegrationTest {
         assertTrue(userOptional.isPresent());
         User user = userOptional.get();
 
-        UserUpdateAccountRequest updateDto = new UserUpdateAccountRequest();
+        UserUpdateRequest updateDto = new UserUpdateRequest();
         updateDto.setPhoneNumber("+987654321");
         updateDto.setEmail("newdima@it-top.academy");
         updateDto.setLastName("newdima");
         updateDto.setFirstName("newdima");
-        updateDto.setBirthDate("2222-22-22");
+        updateDto.setBirthday(LocalDate.parse("2022-12-22"));
         updateDto.setStatus(UserStatus.ACTIVE);
         mockMvc.perform(put("/api/v1/users/{id}", user.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -94,7 +95,7 @@ class UserControllerIntegrationTest {
         assertEquals("+987654321", updatedUser.get().getPhoneNumber());
         assertEquals("newdima@it-top.academy", updatedUser.get().getEmail());
 
-        UserAccountResponse userResponse = userService.getUserById(updatedUser.get().getId());
+        UserResponse userResponse = userService.getUserById(updatedUser.get().getId());
         assertNotNull(userResponse);
         assertEquals("newdima@it-top.academy", userResponse.getEmail());
         assertEquals("+987654321", userResponse.getPhoneNumber());
@@ -102,7 +103,7 @@ class UserControllerIntegrationTest {
 
     @Test
     void shouldDeleteUserSuccessfully() throws Exception {
-        UserCreateAccountRequest dto = new UserCreateAccountRequest("dima@it-top.academy", "1234567890",
+        UserCreateRequest dto = new UserCreateRequest("dima@it-top.academy", "1234567890",
                 "+123456789", "John");
 
         mockMvc.perform(post("/api/v1/users")
@@ -123,7 +124,7 @@ class UserControllerIntegrationTest {
 
     @Test
     void shouldGetUserByIdSuccessfully() throws Exception {
-        UserCreateAccountRequest dto = new UserCreateAccountRequest("dima@it-top.academy", "1234567890",
+        UserCreateRequest dto = new UserCreateRequest("dima@it-top.academy", "1234567890",
                 "+123456789", "John");
 
         mockMvc.perform(post("/api/v1/users")

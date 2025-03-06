@@ -1,20 +1,23 @@
 package com.jmp.userservice.dto.request;
 
-import com.jmp.userservice.constant.UserStatus;
+import com.jmp.userservice.model.SocialLink;
+import com.jmp.userservice.model.UserStatus;
 import com.jmp.userservice.validation.annotation.ValidLinks;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.List;
 
 @Data
-public class UserUpdateAccountRequest {
+public class UserUpdateRequest {
 
     @NotBlank(message = "Should not be empty")
     @Email(message = "This email is not correct format")
     private String email;
 
     @NotBlank(message = "Should not be empty")
+    @Pattern(regexp = "^\\+?\\d{9,15}$", message = "Invalid phone number format")
     @Size(min = 10, max = 15, message = "The phone number should be between 10 and 15 characters")
     private String phoneNumber;
 
@@ -26,19 +29,14 @@ public class UserUpdateAccountRequest {
     @Size(min = 2, max = 30, message = "The last name should be between 2 and 30 characters")
     private String lastName;
 
-    @NotBlank(message = "Should not be empty")
-    @Pattern(
-            regexp = "^\\d{4}-\\d{2}-\\d{2}$",
-            message = "Birth date must be in format YYYY-MM-DD"
-    )
-    private String birthDate;
+    @NotNull(message = "Should not be empty")
+    private LocalDate birthday;
 
     @Size(max = 500, message = "The about me section should not exceed 500 characters")
     private String aboutMe;
 
     @ValidLinks
-    private Map<@NotBlank(message = "Link name cannot be empty") String,
-            @NotBlank(message = "Link URL cannot be empty") String> links;
+    private List<SocialLink> links;
 
     @NotNull(message = "User status cannot be null")
     private UserStatus status;

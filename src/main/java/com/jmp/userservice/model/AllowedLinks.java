@@ -1,4 +1,4 @@
-package com.jmp.userservice.constant;
+package com.jmp.userservice.model;
 
 
 

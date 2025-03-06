@@ -1,14 +1,14 @@
 package com.jmp.userservice.service;
 
-import com.jmp.userservice.dto.request.UserCreateAccountRequest;
-import com.jmp.userservice.dto.request.UserUpdateAccountRequest;
-import com.jmp.userservice.dto.response.UserAccountResponse;
+import com.jmp.userservice.dto.request.UserCreateRequest;
+import com.jmp.userservice.dto.request.UserUpdateRequest;
+import com.jmp.userservice.dto.response.UserResponse;
 
 import java.util.UUID;
 
 public interface UserService {
-    UserAccountResponse createUser(UserCreateAccountRequest user);
-    UserAccountResponse getUserById(UUID id);
-    UserAccountResponse updateUser(UUID id, UserUpdateAccountRequest user);
+    UserResponse createUser(UserCreateRequest user);
+    UserResponse getUserById(UUID id);
+    UserResponse updateUser(UUID id, UserUpdateRequest user);
     void deleteUser(UUID id);
 }

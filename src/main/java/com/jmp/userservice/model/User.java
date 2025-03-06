@@ -1,14 +1,14 @@
 package com.jmp.userservice.model;
 
-import com.jmp.userservice.constant.UserStatus;
 import com.jmp.userservice.validation.annotation.ValidLinks;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.sql.Timestamp;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Table(name = "users")
@@ -34,33 +34,22 @@ public class User {
     private String lastName;
 
     @Column
-    private String birthDate;
+    private LocalDate birthday;
 
     @Column
     private String aboutMe;
 
     @ElementCollection
     @CollectionTable(name = "user_links", joinColumns = @JoinColumn(name = "user_id"))
-    @MapKeyColumn(name = "link_type")
-    @Column
     @ValidLinks
-    private Map<String, String> links;
+    private List<SocialLink> links;
 
     @CreationTimestamp
     @Column(updatable = false, nullable = false)
-    private Timestamp registrationDate;
+    private LocalDateTime registrationDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserStatus status;
+    private UserStatus status = UserStatus.ACTIVE;
 
-    @PrePersist
-    protected void onCreate() {
-        if (this.registrationDate == null) {
-            this.registrationDate = new Timestamp(System.currentTimeMillis());
-        }
-        if (this.status == null) {
-            this.status = UserStatus.ACTIVE;
-        }
-    }
 }
