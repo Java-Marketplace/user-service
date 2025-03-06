@@ -40,6 +40,9 @@ jobs:
       - name: Build and Test with Gradle
         run: ./gradlew build --no-daemon
 
+      - name: Run Checkstyle
+        run: ./gradlew checkstyleMain --no-daemon
+
       - name: Generate JaCoCo Report
         run: ./gradlew jacocoTestReport --no-daemon
 
