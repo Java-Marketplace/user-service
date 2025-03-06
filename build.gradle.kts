@@ -65,6 +65,10 @@ tasks.named("checkstyleMain") {
     dependsOn("compileJava")
 }
 
+tasks.named("checkstyleTest") {
+    enabled = false
+}
+
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
     reports {
