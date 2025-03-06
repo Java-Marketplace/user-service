@@ -1,7 +1,9 @@
 package com.jmp.userservice.model;
 
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SocialLinkTest {
 
@@ -11,7 +13,7 @@ class SocialLinkTest {
                 IllegalArgumentException.class,
                 () -> new SocialLink("invalid-link-type", "https://www.pornhub.com")
         );
-        assertEquals("Social link type not allowed: invalid-link-type", exception.getMessage() );
+        assertEquals("Social link type not allowed: invalid-link-type", exception.getMessage());
     }
 
     @Test
@@ -20,7 +22,7 @@ class SocialLinkTest {
                 IllegalArgumentException.class,
                 () -> new SocialLink("telegram", "invalid-link-url")
         );
-        assertEquals("Social link url is invalid: invalid-link-url", exception.getMessage() );
+        assertEquals("Social link url is invalid: invalid-link-url", exception.getMessage());
     }
 
     @Test

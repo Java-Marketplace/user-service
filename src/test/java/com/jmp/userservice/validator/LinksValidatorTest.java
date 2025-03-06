@@ -45,7 +45,7 @@ class LinksValidatorTest {
     }
 
     @Test
-    void isValid_ShouldReturnFalse_WhenInvalidLink(){
+    void isValid_ShouldReturnFalse_WhenInvalidLink() {
         SocialLink invalidLink = new SocialLink("telegram", "https://telegram.com");
         invalidLink.setUrl("invalid-link-url");
 
@@ -56,7 +56,7 @@ class LinksValidatorTest {
     }
 
     @Test
-    void isValid_ShouldReturnFalse_WhenLinksIsEmpty(){
+    void isValid_ShouldReturnFalse_WhenLinksIsEmpty() {
         SocialLink emptyLink = new SocialLink("telegram", "https://telegram.com");
         emptyLink.setUrl("");
         List<SocialLink> invalidLinks = new ArrayList<>();
@@ -65,7 +65,7 @@ class LinksValidatorTest {
     }
 
     @Test
-    void isValid_ShouldReturnFalse_WhenLinksIsNull(){
+    void isValid_ShouldReturnFalse_WhenLinksIsNull() {
         SocialLink nullLink = new SocialLink("telegram", "https://telegram.com");
         nullLink.setUrl(null);
         List<SocialLink> invalidLinks = new ArrayList<>();
@@ -74,7 +74,7 @@ class LinksValidatorTest {
     }
 
     @Test
-    void isValid_ShouldReturnFalse_WhenLinkTypeIsNull(){
+    void isValid_ShouldReturnFalse_WhenLinkTypeIsNull() {
         SocialLink nullLink = new SocialLink("telegram", "https://telegram.com");
         nullLink.setType(null);
         List<SocialLink> invalidLinks = new ArrayList<>();

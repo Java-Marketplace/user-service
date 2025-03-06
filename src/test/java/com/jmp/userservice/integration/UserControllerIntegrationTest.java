@@ -128,8 +128,8 @@ class UserControllerIntegrationTest {
                 "+123456789", "John");
 
         mockMvc.perform(post("/api/v1/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dto)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated());
 
         Optional<User> userOptional = userRepository.findByEmail("dima@it-top.academy");

@@ -235,7 +235,7 @@ class UserServiceImplTest {
         assertThrows(UserNotFoundByIdException.class, () -> userService.deleteUser(userId));
     }
 
-    private UserUpdateRequest createUserUpdateRequestDto(){
+    private UserUpdateRequest createUserUpdateRequestDto() {
         UserUpdateRequest dto = new UserUpdateRequest();
         dto.setEmail("updated@example.com");
         dto.setPhoneNumber("+123456789");
@@ -244,12 +244,12 @@ class UserServiceImplTest {
         return dto;
     }
 
-    private UserCreateRequest createUserAccountRequestDto(){
+    private UserCreateRequest createUserAccountRequestDto() {
         return new UserCreateRequest(
                 "test@example.com", "SecurePass123!", "+1234567890", "John");
     }
 
-    private User createUserModel(){
+    private User createUserModel() {
         User user = new User();
         user.setId(UUID.randomUUID());
         user.setEmail("test@example.com");
@@ -258,7 +258,7 @@ class UserServiceImplTest {
         return user;
     }
 
-    private UserResponse createUserAccountResponseDto(User user){
+    private UserResponse createUserAccountResponseDto(User user) {
         UserResponse response = new UserResponse();
         response.setId(user.getId());
         response.setEmail(user.getEmail());

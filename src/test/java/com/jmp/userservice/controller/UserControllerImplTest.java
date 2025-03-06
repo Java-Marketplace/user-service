@@ -41,14 +41,6 @@ class UserControllerImplTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @TestConfiguration
-    static class Config {
-        @Bean
-        UserService userService() {
-            return mock(UserService.class);
-        }
-    }
-
     @Test
     void createUser_ShouldReturn201_WhenValidRequest() throws Exception {
         UserCreateRequest requestDto = new UserCreateRequest(
@@ -305,5 +297,13 @@ class UserControllerImplTest {
     private UserCreateRequest createRequestDto() {
         return new UserCreateRequest(
                 "existing@example.com", "SecurePass123!", "+1234567890", "John");
+    }
+
+    @TestConfiguration
+    static class Config {
+        @Bean
+        UserService userService() {
+            return mock(UserService.class);
+        }
     }
 }

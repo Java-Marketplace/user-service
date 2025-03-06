@@ -43,7 +43,7 @@ class UserMapperTest {
     }
 
     @Test
-    void toEntity_ShouldHandleNullValues(){
+    void toEntity_ShouldHandleNullValues() {
         UserCreateRequest dto = new UserCreateRequest(null, null, null, null);
         User user = userMapper.toEntity(dto);
         assertNotNull(user);
@@ -53,7 +53,7 @@ class UserMapperTest {
     }
 
     @Test
-    void toEntity_ShouldHandleEmptyStrings(){
+    void toEntity_ShouldHandleEmptyStrings() {
         UserCreateRequest dto = new UserCreateRequest("", "", "", "");
         User user = userMapper.toEntity(dto);
         assertNotNull(user);
@@ -184,7 +184,7 @@ class UserMapperTest {
     }
 
     @Test
-    void toDto_ShouldHandleNullValues(){
+    void toDto_ShouldHandleNullValues() {
         User user = new User();
         user.setId(null);
         user.setEmail(null);

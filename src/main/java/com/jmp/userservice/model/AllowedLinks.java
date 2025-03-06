@@ -1,7 +1,6 @@
 package com.jmp.userservice.model;
 
 
-
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -20,8 +19,8 @@ public enum AllowedLinks {
     }
 
     public static Set<String> getAllowedLinks() {
-            return Arrays.stream(AllowedLinks.values())
-                    .map(AllowedLinks::getKey)
-                    .collect(Collectors.toSet());
-        }
+        return Arrays.stream(AllowedLinks.values())
+                .map(AllowedLinks::getKey)
+                .collect(Collectors.toSet());
+    }
 }

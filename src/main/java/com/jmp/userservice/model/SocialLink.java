@@ -20,13 +20,14 @@ public class SocialLink {
     @Column(name = "url", nullable = false)
     private String url;
 
-    public SocialLink() {}
+    public SocialLink() {
+    }
 
     public SocialLink(String type, String url) {
         if (!AllowedLinks.getAllowedLinks().contains(type)) {
             throw new IllegalArgumentException("Social link type not allowed: " + type);
         }
-        if(!isValidUrl(url)) {
+        if (!isValidUrl(url)) {
             throw new IllegalArgumentException("Social link url is invalid: " + url);
         }
         this.type = type;
@@ -37,9 +38,10 @@ public class SocialLink {
     private boolean isValidUrl(String url) {
         try {
             new URI(url).toURL();
-            return true ;
+            return true;
         } catch (URISyntaxException | MalformedURLException | IllegalArgumentException e) {
             return false;
-    } }
+        }
+    }
 
 }

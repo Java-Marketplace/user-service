@@ -56,11 +56,15 @@ public class UserServiceImpl implements UserService {
     private void validateUniqueUser(UUID userId, String email, String phoneNumber) {
         userRepository.findByEmail(email)
                 .filter(user -> userId == null || !userId.equals(user.getId()))
-                .ifPresent(user -> {throw new EmailAlreadyUseException();});
+                .ifPresent(user -> {
+                    throw new EmailAlreadyUseException();
+                });
 
         userRepository.findByPhoneNumber(phoneNumber)
                 .filter(user -> userId == null || !userId.equals(user.getId()))
-                .ifPresent(user -> {throw new PhoneAlreadyUseException();});
+                .ifPresent(user -> {
+                    throw new PhoneAlreadyUseException();
+                });
     }
 
     private User findUserById(UUID id) {
