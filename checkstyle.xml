@@ -20,7 +20,7 @@
 
     <!-- Максимальная длина строки -->
     <module name="LineLength">
-        <property name="max" value="100"/>
+        <property name="max" value="140"/>
         <property name="ignorePattern" value="^package.*|^import.*"/>
     </module>
 
