@@ -46,6 +46,12 @@ public class GlobalErrorHandler {
         return ResponseEntity.badRequest().body(errors);
     }
 
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleException(Exception ex) {
+        return createGlobalErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+    }
+
     private ErrorResponse createGlobalErrorResponse(HttpStatus status, String message) {
         return new ErrorResponse(
                 Instant.now(),
