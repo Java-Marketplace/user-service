@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -30,7 +31,7 @@ public class GlobalErrorHandler {
         return createGlobalErrorResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 
-    @ExceptionHandler(UserNotFoundByIdException.class)
+    @ExceptionHandler({UserNotFoundByIdException.class, NoResourceFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleUserNotFoundById(UserNotFoundByIdException e) {
         return createGlobalErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
@@ -44,6 +45,12 @@ public class GlobalErrorHandler {
                 errors.put(error.getField(), error.getDefaultMessage())
         );
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleException(Exception e) {
+        return createGlobalErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
     private ErrorResponse createGlobalErrorResponse(HttpStatus status, String message) {
