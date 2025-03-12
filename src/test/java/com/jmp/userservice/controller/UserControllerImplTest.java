@@ -1,6 +1,7 @@
 package com.jmp.userservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jmp.userservice.controller.user.UserControllerImpl;
 import com.jmp.userservice.dto.request.CreateUserRequest;
 import com.jmp.userservice.dto.request.UpdateUserRequest;
 import com.jmp.userservice.dto.response.UserResponse;
