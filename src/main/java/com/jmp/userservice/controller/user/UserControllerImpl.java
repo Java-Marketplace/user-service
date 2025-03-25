@@ -1,10 +1,11 @@
 package com.jmp.userservice.controller.user;
 
 
+import com.jmp.userservice.constant.ApiConstant;
 import com.jmp.userservice.dto.request.CreateUserRequest;
 import com.jmp.userservice.dto.request.UpdateUserRequest;
 import com.jmp.userservice.dto.response.UserResponse;
-import com.jmp.userservice.service.UserService;
+import com.jmp.userservice.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/users")
+@RequestMapping(ApiConstant.BASE_USER_URL)
 public class UserControllerImpl implements UserController {
     private final UserService userService;
 

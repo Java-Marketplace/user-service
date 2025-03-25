@@ -2,6 +2,7 @@ package com.jmp.userservice.dto.response;
 
 import com.jmp.userservice.model.SocialLink;
 import com.jmp.userservice.model.UserStatus;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
+@Builder
 public class UserResponse {
     private UUID id;
     private String email;

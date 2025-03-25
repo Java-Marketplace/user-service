@@ -1,4 +1,4 @@
-package com.jmp.userservice.service;
+package com.jmp.userservice.service.user;
 
 import com.jmp.userservice.dto.request.CreateUserRequest;
 import com.jmp.userservice.dto.request.UpdateUserRequest;
@@ -9,6 +9,7 @@ import com.jmp.userservice.exception.model.UserNotFoundByIdException;
 import com.jmp.userservice.mapper.UserMapper;
 import com.jmp.userservice.model.User;
 import com.jmp.userservice.repository.UserRepository;
+import com.jmp.userservice.service.keycloak.KeycloakService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,13 +21,17 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final KeycloakService keycloakService;
 
     @Transactional
     @Override
     public UserResponse createUser(CreateUserRequest dto) {
         validateUniqueUser(null, dto.getEmail(), dto.getPhoneNumber());
         User user = userMapper.toEntity(dto);
+
         userRepository.save(user);
+        keycloakService.createUser(user.getId(), dto.getEmail(), dto.getPassword());
+
         return userMapper.toDto(user);
     }
 
@@ -37,20 +42,23 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(user);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public UserResponse updateUser(UUID id, UpdateUserRequest dto) {
         User userForUpdate = findUserById(id);
         validateUniqueUser(id, dto.getEmail(), dto.getPhoneNumber());
         userMapper.updateModel(dto, userForUpdate);
         userRepository.save(userForUpdate);
+
         return userMapper.toDto(userForUpdate);
     }
 
     @Override
+    @Transactional
     public void deleteUser(UUID id) {
         User user = findUserById(id);
         userRepository.delete(user);
+        keycloakService.deleteUser(user.getId());
     }
 
     private void validateUniqueUser(UUID userId, String email, String phoneNumber) {

@@ -1,23 +1,15 @@
-server:
-  port: 0
-
 spring:
-  application:
-    name: user-service
-
-  datasource:
-    url: jdbc:h2:mem:testdb
-    username: sa
-    password: password
-    driver-class-name: org.h2.Driver
-    hikari:
-      connection-timeout: 30000
-      maximum-pool-size: 10
-
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    database-platform: org.hibernate.dialect.H2Dialect
-
   liquibase:
-    enabled: false
+    drop-first: true
+    enabled: true
+
+keycloak:
+  realm: marketplace
+  auth-server-url: http://localhost:8080
+  token-url: ${keycloak.auth-server-url}/realms/${keycloak.realm}/protocol/openid-connect/token
+  refresh-url: ${keycloak.token-url}
+  authorization-url: ${keycloak.auth-server-url}/realms/${keycloak.realm}/protocol/openid-connect/auth
+  client:
+    service-client:
+      client-id: user-service
+      client-secret: ${SECRET:**********}

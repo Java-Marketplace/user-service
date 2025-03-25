@@ -1,4 +1,4 @@
-package com.jmp.userservice.service;
+package com.jmp.userservice.service.user;
 
 import com.jmp.userservice.dto.request.CreateUserRequest;
 import com.jmp.userservice.dto.request.UpdateUserRequest;

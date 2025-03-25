@@ -24,7 +24,7 @@ public class SocialLink {
     }
 
     public SocialLink(String type, String url) {
-        if (!AllowedLinks.getAllowedLinks().contains(type)) {
+        if (!AllowedLink.getAllowedLinks().contains(type)) {
             throw new IllegalArgumentException("Social link type not allowed: " + type);
         }
         if (!isValidUrl(url)) {
