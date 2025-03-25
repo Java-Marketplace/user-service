@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,11 +28,12 @@ public interface UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Новый пользователя успешно создан"),
             @ApiResponse(responseCode = "400", description = "Не правильные параметры запроса"),
+            @ApiResponse(responseCode = "409", description = "Конфликт данных"),
             @ApiResponse(responseCode = "500", description = "Ошибка ответа от сервера")
     })
     @Operation(summary = "Создание нового пользователя", description = "Создает нового пользователя в базе юзеров")
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     UserResponse createUser(@Valid @RequestBody CreateUserRequest dto);
 
     @ApiResponses(value = {
@@ -54,6 +56,7 @@ public interface UserController {
     @Operation(summary = "Обновление пользователя", description = "Обновление пользователя по его UUID")
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_MODERATOR"})
     UserResponse updateUser(@PathVariable UUID id, @Valid @RequestBody UpdateUserRequest dto);
 
     @ApiResponses(value = {
@@ -65,5 +68,6 @@ public interface UserController {
     @Operation(summary = "Удаление пользователя", description = "Удаляет пользователя из базы данных")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
     void deleteUser(@PathVariable UUID id);
 }

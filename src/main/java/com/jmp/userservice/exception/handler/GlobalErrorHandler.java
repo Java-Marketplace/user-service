@@ -1,15 +1,19 @@
-package com.jmp.userservice.exception;
+package com.jmp.userservice.exception.handler;
 
 import com.jmp.userservice.dto.exception.ErrorResponse;
-import com.jmp.userservice.exception.model.EmailAlreadyUseException;
-import com.jmp.userservice.exception.model.PhoneAlreadyUseException;
-import com.jmp.userservice.exception.model.UserNotFoundByIdException;
+import com.jmp.userservice.exception.EmailAlreadyUseException;
+import com.jmp.userservice.exception.ForbiddenException;
+import com.jmp.userservice.exception.PhoneAlreadyUseException;
+import com.jmp.userservice.exception.UserNotFoundByIdException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.Instant;
@@ -33,7 +37,7 @@ public class GlobalErrorHandler {
 
     @ExceptionHandler({UserNotFoundByIdException.class, NoResourceFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleUserNotFoundById(UserNotFoundByIdException e) {
+    public ErrorResponse handleUserNotFoundById(Exception e) {
         return createGlobalErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
@@ -45,6 +49,24 @@ public class GlobalErrorHandler {
                 errors.put(error.getField(), error.getDefaultMessage())
         );
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleHttpMessageNotReadable(Exception ex) {
+        return createGlobalErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+        return createGlobalErrorResponse(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handlerForbiddenException(ForbiddenException ex) {
+        return createGlobalErrorResponse(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

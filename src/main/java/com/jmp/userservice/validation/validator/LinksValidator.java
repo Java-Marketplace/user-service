@@ -1,6 +1,6 @@
 package com.jmp.userservice.validation.validator;
 
-import com.jmp.userservice.model.AllowedLinks;
+import com.jmp.userservice.model.AllowedLink;
 import com.jmp.userservice.model.SocialLink;
 import com.jmp.userservice.validation.annotation.ValidLinks;
 import jakarta.validation.ConstraintValidator;
@@ -20,7 +20,7 @@ public class LinksValidator implements ConstraintValidator<ValidLinks, List<Soci
         }
 
         for (SocialLink link : links) {
-            if (link.getType() == null || !AllowedLinks.getAllowedLinks().contains(link.getType())) {
+            if (link.getType() == null || !AllowedLink.getAllowedLinks().contains(link.getType())) {
                 return false;
             }
 

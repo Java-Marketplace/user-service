@@ -1,6 +1,15 @@
+server:
+  port: 9191
+
 spring:
   application:
     name: user-service
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/${keycloak.realm}
 
   datasource:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
@@ -19,3 +28,26 @@ spring:
         show_sql: true
     hibernate:
       ddl-auto: none
+
+springdoc:
+  swagger-ui:
+    oauth:
+      client-id: ${keycloak.client.service-client.client-id}
+      client-secret: ${keycloak.client.service-client.client-secret}
+      use-basic-authentication-with-access-code-grant: true
+    persist-authorization: true
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+    query-params-enabled: true
+
+keycloak:
+  realm: marketplace
+  auth-server-url: http://localhost:8080
+  token-url: ${keycloak.auth-server-url}/realms/${keycloak.realm}/protocol/openid-connect/token
+  refresh-url: ${keycloak.token-url}
+  authorization-url: ${keycloak.auth-server-url}/realms/${keycloak.realm}/protocol/openid-connect/auth
+  client:
+    service-client:
+      client-id: user-service
+      client-secret: ${SECRET:**********}

@@ -8,19 +8,19 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
-public enum AllowedLinks {
+public enum AllowedLink {
     TELEGRAM("telegram"),
     VK("vk");
 
     private final String key;
 
-    AllowedLinks(String key) {
+    AllowedLink(String key) {
         this.key = key;
     }
 
     public static Set<String> getAllowedLinks() {
-        return Arrays.stream(AllowedLinks.values())
-                .map(AllowedLinks::getKey)
+        return Arrays.stream(AllowedLink.values())
+                .map(AllowedLink::getKey)
                 .collect(Collectors.toSet());
     }
 }
