@@ -1,4 +1,4 @@
-package com.jmp.userservice.exception.model;
+package com.jmp.userservice.exception;
 
 public class KeycloakException extends RuntimeException {
     private static final String MESSAGE = "Keycloak exception: ";

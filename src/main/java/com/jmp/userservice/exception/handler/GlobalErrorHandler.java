@@ -1,10 +1,10 @@
-package com.jmp.userservice.exception;
+package com.jmp.userservice.exception.handler;
 
 import com.jmp.userservice.dto.exception.ErrorResponse;
-import com.jmp.userservice.exception.model.EmailAlreadyUseException;
-import com.jmp.userservice.exception.model.ForbiddenException;
-import com.jmp.userservice.exception.model.PhoneAlreadyUseException;
-import com.jmp.userservice.exception.model.UserNotFoundByIdException;
+import com.jmp.userservice.exception.EmailAlreadyUseException;
+import com.jmp.userservice.exception.ForbiddenException;
+import com.jmp.userservice.exception.PhoneAlreadyUseException;
+import com.jmp.userservice.exception.UserNotFoundByIdException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;

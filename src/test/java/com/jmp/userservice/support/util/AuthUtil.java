@@ -28,7 +28,7 @@ public class AuthUtil {
         ) {
             return "Bearer " + keycloakAdminClient.tokenManager().getAccessToken().getToken();
         } catch (Exception e) {
-            log.error("Ошибка получения токена");
+            log.error("Warning when trying to give the token");
             e.getStackTrace();
         }
         return null;

@@ -1,8 +1,8 @@
 users:
-  - id : 123e4567-e89b-12d3-a456-426614174000
-    email : shagahod@gmail.com
-    phone_number : +1234567890
-    first_name : Dima
-    last_name : Shagahod
-    registration_date : 2025-03-21 22:45:30.123
-    status : ACTIVE
+  - id: 123e4567-e89b-12d3-a456-426614174000
+    email: shagahod@gmail.com
+    phone_number: +1234567890
+    first_name: Dima
+    last_name: Shagahod
+    registration_date: 2025-03-21 22:45:30.123
+    status: ACTIVE

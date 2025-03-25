@@ -1,4 +1,4 @@
-package com.jmp.userservice.exception.model;
+package com.jmp.userservice.exception;
 
 public class EmailAlreadyUseException extends RuntimeException {
     private static final String ERROR_MESSAGE = "Email already in use";

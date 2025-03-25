@@ -1,7 +1,6 @@
 package com.jmp.userservice.controller.user;
 
 
-import com.jmp.userservice.constant.ApiConstant;
 import com.jmp.userservice.dto.request.CreateUserRequest;
 import com.jmp.userservice.dto.request.UpdateUserRequest;
 import com.jmp.userservice.dto.response.UserResponse;
@@ -23,7 +22,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(ApiConstant.BASE_USER_URL)
+@RequestMapping("/api/v1/users")
 public class UserControllerImpl implements UserController {
     private final UserService userService;
 
