@@ -1,7 +1,6 @@
 package com.jmp.userservice.integration.controller;
 
 import com.github.database.rider.core.api.dataset.DataSet;
-import com.jmp.userservice.constant.ApiConstant;
 import com.jmp.userservice.dto.request.CreateUserRequest;
 import com.jmp.userservice.dto.request.UpdateUserRequest;
 import com.jmp.userservice.dto.response.UserResponse;
@@ -24,13 +23,15 @@ class UserControllerTest extends BaseIntegrationTest {
     @Autowired
     private KeycloakService keycloakService;
 
+    public static final String BASE_USER_URL = "/api/v1/users";
+
     @Test
     @DisplayName("[CREATE USER] Код 201 : Успешное создание юзера")
     @Transactional
     void shouldCreateUserSuccessfully() {
         CreateUserRequest userRequest = createUserRequest();
         webClient.post()
-                .uri(ApiConstant.BASE_USER_URL)
+                .uri(BASE_USER_URL)
                 .header("Authorization", authUtil.getAuthorization("test_admin"))
                 .bodyValue(userRequest)
                 .exchange()
@@ -46,7 +47,7 @@ class UserControllerTest extends BaseIntegrationTest {
     @Transactional
     void shouldCreateUserFailWhenEmptyBody() {
         webClient.post()
-                .uri(ApiConstant.BASE_USER_URL)
+                .uri(BASE_USER_URL)
                 .header("Authorization", authUtil.getAuthorization("test_admin"))
                 .exchange()
                 .expectStatus().isBadRequest();
@@ -61,7 +62,7 @@ class UserControllerTest extends BaseIntegrationTest {
         );
 
         webClient.post()
-                .uri(ApiConstant.BASE_USER_URL)
+                .uri(BASE_USER_URL)
                 .header("Authorization", authUtil.getAuthorization("test_admin"))
                 .bodyValue(userRequest)
                 .exchange()
@@ -75,14 +76,14 @@ class UserControllerTest extends BaseIntegrationTest {
         CreateUserRequest userRequest = createUserRequest();
 
         webClient.post()
-                .uri(ApiConstant.BASE_USER_URL)
+                .uri(BASE_USER_URL)
                 .header("Authorization", authUtil.getAuthorization("test_admin"))
                 .bodyValue(userRequest)
                 .exchange()
                 .expectStatus().isCreated();
 
         webClient.post()
-                .uri(ApiConstant.BASE_USER_URL)
+                .uri(BASE_USER_URL)
                 .header("Authorization", authUtil.getAuthorization("test_admin"))
                 .bodyValue(userRequest)
                 .exchange()
@@ -95,7 +96,7 @@ class UserControllerTest extends BaseIntegrationTest {
     @DataSet(value = "db/user/01-user.yml")
     void shouldGetUserSuccessfully() {
         webClient.get()
-                .uri(ApiConstant.BASE_USER_URL + "/" + "123e4567-e89b-12d3-a456-426614174000")
+                .uri(BASE_USER_URL + "/" + "123e4567-e89b-12d3-a456-426614174000")
                 .header("Authorization", authUtil.getAuthorization("test_admin"))
                 .exchange()
                 .expectStatus().isOk()
@@ -109,7 +110,7 @@ class UserControllerTest extends BaseIntegrationTest {
     @DisplayName("[GET USER] Код 400 : Не правильные параметры запроса")
     void shouldGetUserWhenInvalidId() {
         webClient.get()
-                .uri(ApiConstant.BASE_USER_URL + "/" + "1")
+                .uri(BASE_USER_URL + "/" + "1")
                 .header("Authorization", authUtil.getAuthorization("test_admin"))
                 .exchange()
                 .expectStatus().isBadRequest();
@@ -119,7 +120,7 @@ class UserControllerTest extends BaseIntegrationTest {
     @DisplayName("[GET USER] Код 404 : Пользователь не найден")
     void shouldGetUserFailWhenUserNotFound() {
         webClient.get()
-                .uri(ApiConstant.BASE_USER_URL + "/" + UUID.randomUUID())
+                .uri(BASE_USER_URL + "/" + UUID.randomUUID())
                 .header("Authorization", authUtil.getAuthorization("test_admin"))
                 .exchange()
                 .expectStatus().isNotFound();
@@ -134,7 +135,7 @@ class UserControllerTest extends BaseIntegrationTest {
                 "+1234567890");
 
         webClient.delete()
-                .uri(ApiConstant.BASE_USER_URL + "/" + "123e4567-e89b-12d3-a456-426614174000")
+                .uri(BASE_USER_URL + "/" + "123e4567-e89b-12d3-a456-426614174000")
                 .header("Authorization", authUtil.getAuthorization("test_admin"))
                 .exchange()
                 .expectStatus().isNoContent();
@@ -144,7 +145,7 @@ class UserControllerTest extends BaseIntegrationTest {
     @DisplayName("[DELETE USER] Код 404 : Пользователь не найден")
     void shouldDeleteUserFailWhenUserNotFound() {
         webClient.delete()
-                .uri(ApiConstant.BASE_USER_URL + "/" + UUID.randomUUID())
+                .uri(BASE_USER_URL + "/" + UUID.randomUUID())
                 .header("Authorization", authUtil.getAuthorization("test_admin"))
                 .exchange()
                 .expectStatus().isNotFound();
@@ -154,7 +155,7 @@ class UserControllerTest extends BaseIntegrationTest {
     @DisplayName("[DELETE USER] Код 400 : Не правильные параметры запроса")
     void shouldDeleteUserFailWhenInvalidId() {
         webClient.delete()
-                .uri(ApiConstant.BASE_USER_URL + "/" + "1")
+                .uri(BASE_USER_URL + "/" + "1")
                 .header("Authorization", authUtil.getAuthorization("test_admin"))
                 .exchange()
                 .expectStatus().isBadRequest();
@@ -166,7 +167,7 @@ class UserControllerTest extends BaseIntegrationTest {
     @DataSet(value = "db/user/01-user.yml", cleanAfter = true, cleanBefore = true)
     void shouldUpdateUserSuccessfully() {
         webClient.put()
-                .uri(ApiConstant.BASE_USER_URL + "/" + "123e4567-e89b-12d3-a456-426614174000")
+                .uri(BASE_USER_URL + "/" + "123e4567-e89b-12d3-a456-426614174000")
                 .header("Authorization", authUtil.getAuthorization("test_admin"))
                 .bodyValue(updateUserRequest())
                 .exchange()
@@ -183,7 +184,7 @@ class UserControllerTest extends BaseIntegrationTest {
     @DisplayName("[UPDATE USER] Код 400 : Не правильные параметры запроса")
     void shouldUpdateUserFailWhenBadRequest() {
         webClient.put()
-                .uri(ApiConstant.BASE_USER_URL + "/" + "123e4567-e89b-12d3-a456-426614174000")
+                .uri(BASE_USER_URL + "/" + "123e4567-e89b-12d3-a456-426614174000")
                 .header("Authorization", authUtil.getAuthorization("test_admin"))
                 .bodyValue(createUserRequest())
                 .exchange()
@@ -194,7 +195,7 @@ class UserControllerTest extends BaseIntegrationTest {
     @DisplayName("[UPDATE USER] Код 400 : Не корректный UUID")
     void shouldUpdateUserFailWhenInvalidUUID() {
         webClient.put()
-                .uri(ApiConstant.BASE_USER_URL + "/" + "1")
+                .uri(BASE_USER_URL + "/" + "1")
                 .header("Authorization", authUtil.getAuthorization("test_admin"))
                 .bodyValue(updateUserRequest())
                 .exchange()
@@ -205,7 +206,7 @@ class UserControllerTest extends BaseIntegrationTest {
     @DisplayName("[UPDATE USER] Код 404 : Пользователь не найден")
     void shouldUpdateUserFailWhenUserNotFound() {
         webClient.put()
-                .uri(ApiConstant.BASE_USER_URL + "/" + UUID.randomUUID())
+                .uri(BASE_USER_URL + "/" + UUID.randomUUID())
                 .header("Authorization", authUtil.getAuthorization("test_admin"))
                 .bodyValue(updateUserRequest())
                 .exchange()
@@ -216,7 +217,7 @@ class UserControllerTest extends BaseIntegrationTest {
     @DisplayName("[UPDATE USER] Код 403 : Вы женщина")
     void shouldUpdateUserFailWhenUserForbidden() {
         webClient.put()
-                .uri(ApiConstant.BASE_USER_URL + "/" + UUID.randomUUID())
+                .uri(BASE_USER_URL + "/" + UUID.randomUUID())
                 .header("Authorization", authUtil.getAuthorization("test_support"))
                 .bodyValue(updateUserRequest())
                 .exchange()
@@ -227,7 +228,7 @@ class UserControllerTest extends BaseIntegrationTest {
     @DisplayName("[UPDATE USER] Код 401 : Хуета какая то")
     void shouldUpdateUserFailWhenUserUnauthorized() {
         webClient.put()
-                .uri(ApiConstant.BASE_USER_URL + "/" + UUID.randomUUID())
+                .uri(BASE_USER_URL + "/" + UUID.randomUUID())
                 .bodyValue(updateUserRequest())
                 .exchange()
                 .expectStatus().isUnauthorized();

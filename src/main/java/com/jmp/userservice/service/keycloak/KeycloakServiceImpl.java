@@ -1,6 +1,6 @@
 package com.jmp.userservice.service.keycloak;
 
-import com.jmp.userservice.constant.KeycloakRole;
+import com.jmp.userservice.enums.KeycloakRole;
 import com.jmp.userservice.exception.KeycloakException;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;

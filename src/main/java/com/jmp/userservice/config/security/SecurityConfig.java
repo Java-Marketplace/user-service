@@ -1,7 +1,6 @@
 package com.jmp.userservice.config.security;
 
 import com.jmp.userservice.config.security.handler.CustomAuthenticationEntryPoint;
-import com.jmp.userservice.constant.ApiConstant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +28,18 @@ public class SecurityConfig {
 
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
+    private static final String[] WHITE_LIST_URLS = {
+            "/error",
+            "/swagger-ui/**",
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/v2/api-docs/**",
+            "/v3/api-docs/**",
+            "/actuator/**",
+            "/favicon.ico"
+    };
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -36,7 +47,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/users/").permitAll()
-                        .requestMatchers(ApiConstant.getWhiteListUrls()).permitAll()
+                        .requestMatchers(WHITE_LIST_URLS).permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(authenticationEntryPoint))
